@@ -1,0 +1,68 @@
+﻿# Planning
+
+## Purpose
+
+Store files in the cloud and access them from anywhere. This is to replace the use of AWS S3 in my projects.
+
+## Features and Functionality
+
+These are the overall features to add to the application. They are to be split into priority levels.
+
+-	Data storage
+	-	Create 'buckets' to store files
+	-   Upload files to buckets
+	-   Download files from buckets
+	-   Delete files from buckets
+	-   Delete buckets
+-	Management
+	-	Sign up
+	-	Sign in
+	-	Sign out
+	-	Change password
+	-	Reset password
+	-	Delete account
+	-	Change username
+	-	List buckets
+	-	List files in a bucket
+	-	Create API Key
+	-	Delete API Key
+
+
+## Plan
+
+-	MVP (API only, no UI)
+	-	Register account (with manual verification)
+	-	Get auth token (using API token)
+	-	Create bucket
+	-	Upload file
+	-	Download file
+-	Phase 1 (API only, no UI)
+	-	List buckets
+	-	Delete bucket
+
+
+### DB
+
+CREATE TABLE Users (
+    UserId INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(255) UNIQUE,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    IsActive BIT DEFAULT 1
+);
+
+CREATE TABLE UserTokens (
+    TokenId INT PRIMARY KEY IDENTITY(1,1),
+    UserId INT NOT NULL FOREIGN KEY REFERENCES Users(UserId),
+    ApiKey NVARCHAR(100) UNIQUE NOT NULL,
+    Description NVARCHAR(255), -- Optional, for user to identify their API key
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    ExpiresAt DATETIME NULL, -- Optional, if you want API keys to expire
+    IsActive BIT DEFAULT 1
+);
+
+### Requests
+
+-   Authenticate
+	-   User sends request to auth/token with api key (possibly hashed in some way, or maybe the hashing is just done on the server)
+	-   Server checks if the api key is valid and returns a token

@@ -1,0 +1,11 @@
+﻿CREATE TABLE [dbo].[UserTokens]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
+    UserId INT NOT NULL,
+    ApiKey NVARCHAR(100) UNIQUE NOT NULL,
+    [Description] NVARCHAR(255),
+    CreatedAt DATETIME DEFAULT GETDATE() NOT NULL,
+    ExpiresAt DATETIME NULL,
+    IsActive BIT DEFAULT 1 NOT NULL, 
+    CONSTRAINT [FK_UserTokens_Users] FOREIGN KEY (UserId) REFERENCES Users(Id)
+)

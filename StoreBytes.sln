@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytesAPI", "StoreBytesAPI\StoreBytesAPI.csproj", "{0F8CD28C-0904-4357-B940-3D7768DF1738}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "StoreBytesDB", "StoreBytesDB\StoreBytesDB.sqlproj", "{8CB0A756-18BD-49CE-9BFF-CFE137B16E7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytesLibrary", "StoreBytesLibrary\StoreBytesLibrary.csproj", "{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,16 @@ Global
 		{0F8CD28C-0904-4357-B940-3D7768DF1738}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F8CD28C-0904-4357-B940-3D7768DF1738}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F8CD28C-0904-4357-B940-3D7768DF1738}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CB0A756-18BD-49CE-9BFF-CFE137B16E7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CB0A756-18BD-49CE-9BFF-CFE137B16E7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CB0A756-18BD-49CE-9BFF-CFE137B16E7F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8CB0A756-18BD-49CE-9BFF-CFE137B16E7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CB0A756-18BD-49CE-9BFF-CFE137B16E7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CB0A756-18BD-49CE-9BFF-CFE137B16E7F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
