@@ -6,15 +6,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace StoreBytesLibrary.Databases
 {
-    public class SqlDataAccess : ISqlDataAccess
+    public class PGSqlDataAccess : IPGSqlDataAccess
     {
         private readonly IConfiguration _config;
 
-        public SqlDataAccess(IConfiguration config)
+        static PGSqlDataAccess()
+        {
+            // Enable Dapper to map snake_case to PascalCase
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+        }
+
+        public PGSqlDataAccess(IConfiguration config)
         {
             _config = config;
         }
@@ -33,7 +39,7 @@ namespace StoreBytesLibrary.Databases
                 commandType = CommandType.StoredProcedure;
             }
 
-            using (IDbConnection connection = new SqlConnection(connectionString))
+            using (IDbConnection connection = new NpgsqlConnection(connectionString))
             {
                 List<T> rows = connection.Query<T>(sqlStatement, parameters, commandType: commandType).ToList();
                 return rows;
@@ -54,7 +60,7 @@ namespace StoreBytesLibrary.Databases
                 commandType = CommandType.StoredProcedure;
             }
 
-            using (IDbConnection connection = new SqlConnection(connectionString))
+            using (IDbConnection connection = new NpgsqlConnection(connectionString))
             {
                 connection.Execute(sqlStatement, parameters, commandType: commandType);
             }
