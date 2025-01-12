@@ -12,11 +12,11 @@ namespace StoreBytesLibrary.Databases
 {
     public class SqlDataAccess : ISqlDataAccess
     {
-        private readonly IConfiguration config;
+        private readonly IConfiguration _config;
 
         public SqlDataAccess(IConfiguration config)
         {
-            this.config = config;
+            _config = config;
         }
 
         public List<T> LoadData<T, U>(
@@ -25,7 +25,7 @@ namespace StoreBytesLibrary.Databases
             string connectionStringName,
             dynamic? options = null)
         {
-            string? connectionString = this.config.GetConnectionString(connectionStringName);
+            string? connectionString = _config.GetConnectionString(connectionStringName);
             CommandType commandType = CommandType.Text;
 
             if (options?.IsStoredProcedure != null && options?.IsStoredProcedure == true)
@@ -46,7 +46,7 @@ namespace StoreBytesLibrary.Databases
             string connectionStringName,
             dynamic? options = null)
         {
-            string? connectionString = this.config.GetConnectionString(connectionStringName);
+            string? connectionString = _config.GetConnectionString(connectionStringName);
             CommandType commandType = CommandType.Text;
 
             if (options?.IsStoredProcedure != null && options?.IsStoredProcedure == true)
