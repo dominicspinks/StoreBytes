@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using StoreBytesLibrary.Data;
@@ -8,6 +9,8 @@ using System.Text;
 
 namespace StoreBytesAPI.Controllers
 {
+    [Route("auth")]
+    [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly IDatabaseData _db;
@@ -27,7 +30,7 @@ namespace StoreBytesAPI.Controllers
                 // Validate API key
                 var userToken = _db.GetUserTokenByApiKey(apiKey);
 
-                if (userToken == null || !userToken.IsActive)
+                if (userToken == null)
                 {
                     return Unauthorized("Invalid or inactive API key.");
                 }
@@ -40,13 +43,38 @@ namespace StoreBytesAPI.Controllers
                     Subject = new ClaimsIdentity(new[] {
                         new Claim(ClaimTypes.NameIdentifier, userToken.UserId.ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddMinutes(15),
+                    Expires = DateTime.UtcNow.AddMinutes(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
 
                 var token = tokenHandler.CreateToken(tokenDescriptor);
 
                 return Ok(new { token = tokenHandler.WriteToken(token) });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        // GET: /auth/test
+        [HttpGet("test")]
+        [Authorize]
+        public IActionResult TestToken()
+        {
+            // This endpoint will only be accessible with a valid token
+            return Ok("Token is valid!");
+        }
+
+        // POST: /auth/create-api-key
+        [HttpPost("create-api-key")]
+        [Authorize]
+        public IActionResult CreateApiKey([FromBody] int userId)
+        {
+            try
+            {
+                _db.SaveApiKey(userId);
+                return Ok("API key generated successfully. Check logs for the key.");
             }
             catch (Exception ex)
             {

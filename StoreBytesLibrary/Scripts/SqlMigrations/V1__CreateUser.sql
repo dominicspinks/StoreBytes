@@ -18,6 +18,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO storebyte
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO storebytes;
 
+-- Set default privileges for future sequences
+ALTER DEFAULT PRIVILEGES IN SCHEMA public 
+GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO storebytes;
+
 -- Grant EXECUTE permission for all existing functions and procedures
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO storebytes;
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA public TO storebytes;

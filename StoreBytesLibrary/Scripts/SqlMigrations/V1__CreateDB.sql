@@ -16,7 +16,7 @@ CREATE TABLE users (
 CREATE TABLE user_tokens (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id),
-    api_key VARCHAR(100) UNIQUE NOT NULL,
+    api_key VARCHAR(64) UNIQUE NOT NULL,
     description VARCHAR(255),
     created_at TIMESTAMP DEFAULT NOW() NOT NULL,
     expires_at TIMESTAMP,
