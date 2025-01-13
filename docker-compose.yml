@@ -1,0 +1,8 @@
+services:
+  storebytesapi:
+    image: ${DOCKER_REGISTRY-}storebytesapi
+    build:
+      context: .
+      dockerfile: StoreBytesAPI/Dockerfile
+    volumes:
+      - C:\\Users\\Dominic\\Documents\\Projects\\StoreBytesFileStorage:/file-storage/

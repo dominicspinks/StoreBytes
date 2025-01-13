@@ -18,12 +18,41 @@ namespace StoreBytesLibrary.Utilities
                                         .ToArray());
         }
 
-        public static string HashApiKey(string apiKey)
+        public static string HashHex(string input, string secret = "", int length = 0)
+        {
+            return Hash(input, secret, false, length);
+        }
+
+        public static string HashBase64(string input, string secret = "", int length = 0)
+        {
+            return Hash(input, secret, true, length);
+        }
+
+        public static string HashBase64Url(string input, string secret = "", int length = 0)
+        {
+            return Hash(input, secret, true, length)
+                .Replace('+', '-')
+                .Replace('/', '_')
+                .Replace("=", "");
+        }
+
+        private static string Hash(string input, string secret = "", bool useBase64 = false, int length = 0)
         {
             using (var sha256 = SHA256.Create())
             {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(apiKey));
-                return Convert.ToBase64String(bytes);
+                string data = $"{input}{secret}";
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(data));
+
+                string hash = useBase64 ? Convert.ToBase64String(bytes) : BitConverter.ToString(bytes).Replace("-", "").ToLower();
+
+                if (length > 0)
+                {
+                    return hash.Substring(0, length);
+                }
+                else
+                {
+                    return hash;
+                }
             }
         }
     }

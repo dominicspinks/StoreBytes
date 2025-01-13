@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytesAPI", "StoreBytes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytesLibrary", "StoreBytesLibrary\StoreBytesLibrary.csproj", "{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{CF411205-0473-462F-AD60-3B6D1AA63975}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF411205-0473-462F-AD60-3B6D1AA63975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF411205-0473-462F-AD60-3B6D1AA63975}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF411205-0473-462F-AD60-3B6D1AA63975}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF411205-0473-462F-AD60-3B6D1AA63975}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

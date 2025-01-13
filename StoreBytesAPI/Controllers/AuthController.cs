@@ -2,14 +2,16 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using StoreBytesAPI.Models;
 using StoreBytesLibrary.Data;
+using StoreBytesLibrary.Utilities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
 namespace StoreBytesAPI.Controllers
 {
-    [Route("auth")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -75,6 +77,29 @@ namespace StoreBytesAPI.Controllers
             {
                 _db.SaveApiKey(userId);
                 return Ok("API key generated successfully. Check logs for the key.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        // POST: /auth/add-user
+        [HttpPost("add-user")]
+        [Authorize]
+        public IActionResult AddUser([FromBody] AddUserRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.Email))
+                {
+                    return BadRequest("Email is required.");
+                }
+
+                // Add the user to the database
+                _db.AddUser(request.Email);
+
+                return Ok("User added successfully.");
             }
             catch (Exception ex)
             {

@@ -1,6 +1,2 @@
 @StoreBytesAPI_HostAddress = http://localhost:5212
 
-GET {{StoreBytesAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

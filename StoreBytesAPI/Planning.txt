@@ -26,43 +26,23 @@ These are the overall features to add to the application. They are to be split i
 	-	List files in a bucket
 	-	Create API Key
 	-	Delete API Key
+-	Restrictions
+	-	File size limits
+	-   Data caps for users
+-	Nice to haves:
+	-	Encrypt files when stored on disk
+    -   Save/serve smaller images (eg thumbnail size)
 
 
 ## Plan
 
 -	MVP (API only, no UI)
-	-	Register account (with manual verification)
-	-	Get auth token (using API token)
-	-	Create bucket
-	-	Upload file
-	-	Download file
+	-	Register account (with manual verification) - done (minus verification, this will be added in the future)
+	-	Get auth token (using API token) - done
+	-	Create bucket - done
+	-	Upload file - done
+	-	Download file - done
 -	Phase 1 (API only, no UI)
 	-	List buckets
 	-	Delete bucket
 
-
-### DB
-
-CREATE TABLE Users (
-    UserId INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Email NVARCHAR(255) UNIQUE,
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    IsActive BIT DEFAULT 1
-);
-
-CREATE TABLE UserTokens (
-    TokenId INT PRIMARY KEY IDENTITY(1,1),
-    UserId INT NOT NULL FOREIGN KEY REFERENCES Users(UserId),
-    ApiKey NVARCHAR(100) UNIQUE NOT NULL,
-    Description NVARCHAR(255), -- Optional, for user to identify their API key
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    ExpiresAt DATETIME NULL, -- Optional, if you want API keys to expire
-    IsActive BIT DEFAULT 1
-);
-
-### Requests
-
--   Authenticate
-	-   User sends request to auth/token with api key (possibly hashed in some way, or maybe the hashing is just done on the server)
-	-   Server checks if the api key is valid and returns a token
