@@ -28,10 +28,9 @@ namespace StoreBytesLibrary.Databases
         public List<T> LoadData<T, U>(
             string sqlStatement,
             U parameters,
-            string connectionStringName,
             dynamic? options = null)
         {
-            string? connectionString = _config.GetConnectionString(connectionStringName);
+            string? connectionString = _config["DATABASE_URL"];
             CommandType commandType = CommandType.Text;
 
             if (options?.IsStoredProcedure != null && options?.IsStoredProcedure == true)
@@ -49,10 +48,9 @@ namespace StoreBytesLibrary.Databases
         public void SaveData<T>(
             string sqlStatement,
             T parameters,
-            string connectionStringName,
             dynamic? options = null)
         {
-            string? connectionString = _config.GetConnectionString(connectionStringName);
+            string? connectionString = _config["DATABASE_URL"];
             CommandType commandType = CommandType.Text;
 
             if (options?.IsStoredProcedure != null && options?.IsStoredProcedure == true)

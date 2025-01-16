@@ -39,7 +39,7 @@ namespace StoreBytesAPI.Controllers
 
                 // Generate JWT token
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_config["Jwt:Secret"]);
+                var key = Encoding.ASCII.GetBytes(_config["JWT_SECRET"]);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new[] {

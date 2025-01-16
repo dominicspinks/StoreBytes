@@ -45,7 +45,7 @@ public class FileController : ControllerBase
         // Generate hashed file name
         string fileExtension = Path.GetExtension(file.FileName);
         string secret = ConfigurationHelper.GetHashingSecret(_config);
-        string hashedName = $"{SecurityHelper.HashBase64Url(file.FileName, secret, 10)}{fileExtension}";
+        string hashedName = $"{SecurityHelper.HashBase64Url($"{bucketId}+{file.FileName}", secret, 10)}{fileExtension}";
 
         // Save the file using the file storage service
         string filePath;

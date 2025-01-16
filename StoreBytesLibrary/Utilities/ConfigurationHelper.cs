@@ -11,7 +11,7 @@ namespace StoreBytesLibrary.Utilities
     {
         public static string GetHashingSecret(IConfiguration config)
         {
-            string? secret = config["Hashing:Secret"];
+            string? secret = config["HASH_SECRET"];
             if (string.IsNullOrEmpty(secret))
             {
                 throw new Exception("Hashing secret is not configured.");
@@ -22,7 +22,7 @@ namespace StoreBytesLibrary.Utilities
 
         public static string GetFileStorageBasePath(IConfiguration config)
         {
-            string? basePath = config["FileStorage:BasePath"];
+            string? basePath = config["FILE_BASEPATH"];
             if (string.IsNullOrEmpty(basePath))
             {
                 throw new Exception("File storage base path is not configured.");

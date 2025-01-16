@@ -14,7 +14,6 @@ namespace StoreBytesLibrary.Data
     {
         private readonly IPGSqlDataAccess _db;
         private readonly IConfiguration _config;
-        private const string _connectionStringName = "PostgresConnection";
 
         public PGSqlData(IPGSqlDataAccess db, IConfiguration config)
         {
@@ -36,7 +35,7 @@ namespace StoreBytesLibrary.Data
                         AND (t.expires_at IS NULL OR t.expires_at > NOW()) 
                         AND u.is_active = true";
 
-            var results = _db.LoadData<UserToken, dynamic>(sql, new { ApiKey = apiKey }, _connectionStringName);
+            var results = _db.LoadData<UserToken, dynamic>(sql, new { ApiKey = apiKey });
             return results.FirstOrDefault();
         }
 
@@ -51,7 +50,7 @@ namespace StoreBytesLibrary.Data
                     INSERT INTO user_tokens (user_id, api_key, created_at, is_active)
                     VALUES (@UserId, @ApiKey, NOW(), true)";
 
-            _db.SaveData(sql, new { UserId = userId, ApiKey = hashedApiKey }, _connectionStringName);
+            _db.SaveData(sql, new { UserId = userId, ApiKey = hashedApiKey });
 
             // Output the generated API key (provide this to the user)
             Console.WriteLine("Generated API Key (provide this to the user): " + apiKey);
@@ -63,7 +62,7 @@ namespace StoreBytesLibrary.Data
                     INSERT INTO users (email, created_at, is_active)
                     VALUES (@Email, NOW(), true)";
 
-            _db.SaveData(sql, new { Email = email }, _connectionStringName);
+            _db.SaveData(sql, new { Email = email });
         }
 
         public void CreateBucket(int userId, string bucketName)
@@ -75,7 +74,7 @@ namespace StoreBytesLibrary.Data
                     FROM buckets 
                     WHERE user_id = @UserId AND name = @BucketName";
 
-            int count = _db.LoadData<int, dynamic>(sqlCheck, new { UserId = userId, BucketName = bucketName }, _connectionStringName).FirstOrDefault();
+            int count = _db.LoadData<int, dynamic>(sqlCheck, new { UserId = userId, BucketName = bucketName }).FirstOrDefault();
 
             if (count > 0)
             {
@@ -88,7 +87,7 @@ namespace StoreBytesLibrary.Data
                     INSERT INTO buckets (name, user_id, hashed_name, created_at, is_active) 
                     VALUES (@BucketName, @UserId, @HashedName, NOW(), true)";
 
-            _db.SaveData(sqlInsert, new { BucketName = bucketName, UserId = userId, HashedName = hashedName }, _connectionStringName);
+            _db.SaveData(sqlInsert, new { BucketName = bucketName, UserId = userId, HashedName = hashedName });
         }
 
         public void AddFileMetadata(int bucketId, string originalName, string hashedName, string filePath, long size, string contentType)
@@ -105,7 +104,7 @@ namespace StoreBytesLibrary.Data
                 FilePath = filePath,
                 Size = size,
                 ContentType = contentType
-            }, _connectionStringName);
+            });
         }
 
         public Bucket? GetBucketById(int bucketId, int userId)
@@ -115,7 +114,7 @@ namespace StoreBytesLibrary.Data
                     FROM buckets
                     WHERE id = @BucketId AND user_id = @UserId AND is_active = true";
 
-            var results = _db.LoadData<Bucket, dynamic>(sql, new { BucketId = bucketId, UserId = userId }, _connectionStringName);
+            var results = _db.LoadData<Bucket, dynamic>(sql, new { BucketId = bucketId, UserId = userId });
 
             return results.FirstOrDefault();
         }
@@ -130,8 +129,7 @@ namespace StoreBytesLibrary.Data
 
             return _db.LoadData<FileMetadata, dynamic>(
                 sql,
-                new { BucketHash = bucketHash, FileHash = fileHash },
-                _connectionStringName
+                new { BucketHash = bucketHash, FileHash = fileHash }
             ).FirstOrDefault();
         }
     }

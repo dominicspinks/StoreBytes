@@ -4,20 +4,53 @@ using StoreBytesLibrary.Data;
 using StoreBytesLibrary.Databases;
 using StoreBytesLibrary.Services;
 using System.Text;
+using DotNetEnv;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+Env.Load();
 
+var defaultEnvironmentVariables = new Dictionary<string, string>
+{
+    { "HASH_SECRET", "this_is_the_hash_secret" },
+    { "JWT_SECRET", "this_is_the_jwt_secret" }
+};
+
+var requiredEnvironmentVariables = new List<string>
+{
+    "DATABASE_URL"
+};
+
+foreach (var variable in requiredEnvironmentVariables)
+{
+    var value = Environment.GetEnvironmentVariable(variable);
+    if (string.IsNullOrEmpty(value))
+    {
+        Console.WriteLine($"ERROR: Environment variable '{variable}' is not set.");
+        return; // Exit the application
+    }
+}
+
+builder.Configuration
+    .AddInMemoryCollection(defaultEnvironmentVariables)
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+
+// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IPGSqlDataAccess, PGSqlDataAccess>();
 builder.Services.AddSingleton<IDatabaseData, PGSqlData>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddSingleton(new FileStorageService(builder.Configuration["FileStorage:BasePath"]));
+builder.Services.AddSingleton(new FileStorageService(builder.Configuration["FilesBasePath"]));
 
 
 // Configure JWT authentication
-var jwtKey = builder.Configuration["Jwt:Secret"];
+var jwtKey = builder.Configuration["JWT_SECRET"];
 var key = Encoding.ASCII.GetBytes(jwtKey);
 builder.Services.AddAuthentication(options =>
 {
@@ -49,7 +82,7 @@ if (app.Environment.IsDevelopment())
     //app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
