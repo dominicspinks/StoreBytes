@@ -10,6 +10,6 @@ namespace StoreBytesLibrary.Data
         Bucket? GetBucketById(int bucketId, int userId);
         FileMetadata? GetFileMetadata(string bucketHash, string fileHash);
         UserToken? GetUserTokenByApiKey(string apiKey);
-        void SaveApiKey(int userId);
+        string SaveApiKey(int userId);
     }
 }

@@ -71,12 +71,18 @@ namespace StoreBytesAPI.Controllers
         // POST: /auth/create-api-key
         [HttpPost("create-api-key")]
         [Authorize]
-        public IActionResult CreateApiKey([FromBody] int userId)
+        public IActionResult CreateApiKey()
         {
             try
             {
-                _db.SaveApiKey(userId);
-                return Ok("API key generated successfully. Check logs for the key.");
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Unauthorized("Invalid user ID.");
+                }
+
+                string newApiKey = _db.SaveApiKey(userId);
+                return Ok($"API key generated successfully. Record this for future use. Key: {newApiKey} ");
             }
             catch (Exception ex)
             {

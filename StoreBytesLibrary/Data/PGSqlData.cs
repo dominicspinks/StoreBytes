@@ -14,17 +14,19 @@ namespace StoreBytesLibrary.Data
     {
         private readonly IPGSqlDataAccess _db;
         private readonly IConfiguration _config;
+        private readonly string _hashSecret = "";
 
         public PGSqlData(IPGSqlDataAccess db, IConfiguration config)
         {
             _db = db;
             _config = config;
+            _hashSecret = _config["HASH_SECRET"] ?? "";
         }
 
         public UserToken? GetUserTokenByApiKey(string apiKey)
         {
             // Hash the provided API key
-            string hashedApiKey = SecurityHelper.HashBase64(apiKey);
+            string hashedApiKey = SecurityHelper.HashBase64(apiKey, _hashSecret);
 
             const string sql = @"
                     SELECT t.id, t.user_id, t.api_key, t.description, t.created_at, t.expires_at, t.is_active 
@@ -35,25 +37,34 @@ namespace StoreBytesLibrary.Data
                         AND (t.expires_at IS NULL OR t.expires_at > NOW()) 
                         AND u.is_active = true";
 
-            var results = _db.LoadData<UserToken, dynamic>(sql, new { ApiKey = apiKey });
+            var results = _db.LoadData<UserToken, dynamic>(sql, new { ApiKey = hashedApiKey });
             return results.FirstOrDefault();
         }
 
-        public void SaveApiKey(int userId)
+        public string SaveApiKey(int userId)
         {
             // Generate the API key
             string apiKey = SecurityHelper.GenerateApiKey();
-            string hashedApiKey = SecurityHelper.HashBase64(apiKey);
+            string hashedApiKey = SecurityHelper.HashBase64(apiKey, _hashSecret);
 
             // Save the hashed API key to the database
             const string sql = @"
                     INSERT INTO user_tokens (user_id, api_key, created_at, is_active)
                     VALUES (@UserId, @ApiKey, NOW(), true)";
 
-            _db.SaveData(sql, new { UserId = userId, ApiKey = hashedApiKey });
+            try
+            {
+                _db.SaveData(sql, new { UserId = userId, ApiKey = hashedApiKey });
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to create API key");
+            }
 
             // Output the generated API key (provide this to the user)
             Console.WriteLine("Generated API Key (provide this to the user): " + apiKey);
+            return apiKey;
         }
 
         public void AddUser(string email)
@@ -67,8 +78,6 @@ namespace StoreBytesLibrary.Data
 
         public void CreateBucket(int userId, string bucketName)
         {
-            string? secret = ConfigurationHelper.GetHashingSecret(_config);
-
             const string sqlCheck = @"
                     SELECT COUNT(1) 
                     FROM buckets 
@@ -81,7 +90,7 @@ namespace StoreBytesLibrary.Data
                 throw new Exception("Bucket name must be unique for the user.");
             }
 
-            string hashedName = SecurityHelper.HashBase64Url($"{userId}{bucketName}", secret, 20);
+            string hashedName = SecurityHelper.HashBase64Url($"{userId}{bucketName}", _hashSecret, 20);
 
             const string sqlInsert = @"
                     INSERT INTO buckets (name, user_id, hashed_name, created_at, is_active) 

@@ -21,7 +21,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadFile([FromForm] IFormFile file, [FromForm] int bucketId)
+    public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] int bucketId)
     {
         if (file == null || file.Length == 0)
         {

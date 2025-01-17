@@ -42,7 +42,15 @@ These are the overall features to add to the application. They are to be split i
 	-	Create bucket - done
 	-	Upload file - done
 	-	Download file - done
--	Phase 1 (API only, no UI)
-	-	List buckets
-	-	Delete bucket
+-	Phase 1
+	-   Create UI
+		-	Sign up
+		-	Sign in
+		-	Sign out
+		-	Generate API Key
+		-	List buckets
+		-	Delete bucket
+		-	List files in bucket
+			-	Display url
+		-	Delete file from bucket
 
