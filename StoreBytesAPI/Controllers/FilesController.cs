@@ -21,7 +21,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] int bucketId)
+    public IActionResult UploadFile(IFormFile file, [FromForm] string bucketName)
     {
         if (file == null || file.Length == 0)
         {
@@ -36,7 +36,7 @@ public class FileController : ControllerBase
         }
 
         // Retrieve the bucket
-        var bucket = _db.GetBucketById(bucketId, userId);
+        var bucket = _db.GetBucketByName(bucketName, userId);
         if (bucket == null)
         {
             return NotFound("Bucket not found.");
@@ -45,7 +45,7 @@ public class FileController : ControllerBase
         // Generate hashed file name
         string fileExtension = Path.GetExtension(file.FileName);
         string secret = ConfigurationHelper.GetHashingSecret(_config);
-        string hashedName = $"{SecurityHelper.HashBase64Url($"{bucketId}+{file.FileName}", secret, 10)}{fileExtension}";
+        string hashedName = $"{SecurityHelper.HashBase64Url($"{bucket.Id}+{file.FileName}", secret, 10)}{fileExtension}";
 
         // Save the file using the file storage service
         string filePath;
@@ -55,7 +55,7 @@ public class FileController : ControllerBase
         }
 
         // Save metadata to the database
-        _db.AddFileMetadata(bucketId, file.FileName, hashedName, filePath, file.Length, file.ContentType);
+        _db.AddFileMetadata(bucket.Id, file.FileName, hashedName, filePath, file.Length, file.ContentType);
 
         return Ok("File uploaded successfully.");
     }

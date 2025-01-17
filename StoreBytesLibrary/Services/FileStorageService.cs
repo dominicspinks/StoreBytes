@@ -30,7 +30,7 @@ namespace StoreBytesLibrary.Services
                 fileStream.CopyTo(stream);
             }
 
-            return filePath;
+            return Path.Combine(bucketHash, hashedFileName);
         }
 
         public Stream? GetFileStream(string bucketHash, string fileHash)

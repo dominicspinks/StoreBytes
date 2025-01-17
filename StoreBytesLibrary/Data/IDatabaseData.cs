@@ -8,6 +8,7 @@ namespace StoreBytesLibrary.Data
         void AddUser(string email);
         void CreateBucket(int userId, string bucketName);
         Bucket? GetBucketById(int bucketId, int userId);
+        Bucket? GetBucketByName(string bucketName, int userId);
         FileMetadata? GetFileMetadata(string bucketHash, string fileHash);
         UserToken? GetUserTokenByApiKey(string apiKey);
         string SaveApiKey(int userId);

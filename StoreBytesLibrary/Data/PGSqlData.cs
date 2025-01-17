@@ -128,6 +128,18 @@ namespace StoreBytesLibrary.Data
             return results.FirstOrDefault();
         }
 
+        public Bucket? GetBucketByName(string bucketName, int userId)
+        {
+            const string sql = @"
+                    SELECT id, name, hashed_name, user_id, created_at, is_active
+                    FROM buckets
+                    WHERE name = @BucketName AND user_id = @UserId AND is_active = true";
+
+            var results = _db.LoadData<Bucket, dynamic>(sql, new { BucketName = bucketName, UserId = userId });
+
+            return results.FirstOrDefault();
+        }
+
         public FileMetadata? GetFileMetadata(string bucketHash, string fileHash)
         {
             const string sql = @"

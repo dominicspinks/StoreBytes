@@ -32,6 +32,7 @@ These are the overall features to add to the application. They are to be split i
 -	Nice to haves:
 	-	Encrypt files when stored on disk
     -   Save/serve smaller images (eg thumbnail size)
+	-   Validate a file name is unique before submitting
 
 
 ## Plan
