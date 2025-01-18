@@ -57,7 +57,7 @@ public class FileController : ControllerBase
         // Save metadata to the database
         _db.AddFileMetadata(bucket.Id, file.FileName, hashedName, filePath, file.Length, file.ContentType);
 
-        return Ok("File uploaded successfully.");
+        return Ok(new { url = $"{filePath}" });
     }
 
     [HttpGet("{bucketHash}/{fileHash}")]
