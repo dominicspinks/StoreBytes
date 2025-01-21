@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StoreBytesLibrary.Models
+namespace StoreBytes.DataAccess.Models
 {
-    public class Bucket
+    public class UserToken
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string HashedName { get; set; }
         public int UserId { get; set; }
+        public string ApiKey { get; set; }
+        public string? Description { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? ExpiresAt { get; set; }
         public bool IsActive { get; set; }
     }
 }

@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.Configuration;
-using StoreBytesLibrary.Databases;
-using StoreBytesLibrary.Models;
-using StoreBytesLibrary.Utilities;
+using StoreBytes.DataAccess.Databases;
+using StoreBytes.DataAccess.Models;
+using StoreBytes.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StoreBytesLibrary.Data
+namespace StoreBytes.DataAccess.Data
 {
     public class PGSqlData : IDatabaseData
     {

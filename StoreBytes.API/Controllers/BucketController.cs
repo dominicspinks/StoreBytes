@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StoreBytesAPI.Models;
-using StoreBytesLibrary.Data;
-using StoreBytesLibrary.Utilities;
+using StoreBytes.API.Models;
+using StoreBytes.DataAccess.Data;
+using StoreBytes.Common.Utilities;
 
-namespace StoreBytesAPI.Controllers
+namespace StoreBytes.API.Controllers
 {
     [Route("api/buckets")]
     [ApiController]

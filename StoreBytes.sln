@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytesAPI", "StoreBytesAPI\StoreBytesAPI.csproj", "{0F8CD28C-0904-4357-B940-3D7768DF1738}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytes.API", "StoreBytes.API\StoreBytes.API.csproj", "{0F8CD28C-0904-4357-B940-3D7768DF1738}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytesLibrary", "StoreBytesLibrary\StoreBytesLibrary.csproj", "{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytes.DataAccess", "StoreBytes.DataAccess\StoreBytes.DataAccess.csproj", "{CFDBE102-EC59-4C0D-9095-F9D1E48FE21E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytes.Service", "StoreBytes.Service\StoreBytes.Service.csproj", "{3AD548AF-42D9-4637-B311-98701C01503D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreBytes.Common", "StoreBytes.Common\StoreBytes.Common.csproj", "{2E6D9CC3-6C11-4326-AE56-8CC94014162C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +21,18 @@ Global
 		{0F8CD28C-0904-4357-B940-3D7768DF1738}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F8CD28C-0904-4357-B940-3D7768DF1738}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F8CD28C-0904-4357-B940-3D7768DF1738}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4EBF005F-F1B2-4A32-AA64-D3FD8883CC6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFDBE102-EC59-4C0D-9095-F9D1E48FE21E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFDBE102-EC59-4C0D-9095-F9D1E48FE21E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFDBE102-EC59-4C0D-9095-F9D1E48FE21E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFDBE102-EC59-4C0D-9095-F9D1E48FE21E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AD548AF-42D9-4637-B311-98701C01503D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AD548AF-42D9-4637-B311-98701C01503D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AD548AF-42D9-4637-B311-98701C01503D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AD548AF-42D9-4637-B311-98701C01503D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E6D9CC3-6C11-4326-AE56-8CC94014162C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E6D9CC3-6C11-4326-AE56-8CC94014162C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E6D9CC3-6C11-4326-AE56-8CC94014162C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E6D9CC3-6C11-4326-AE56-8CC94014162C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

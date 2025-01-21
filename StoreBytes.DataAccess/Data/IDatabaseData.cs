@@ -1,6 +1,6 @@
-﻿using StoreBytesLibrary.Models;
+﻿using StoreBytes.DataAccess.Models;
 
-namespace StoreBytesLibrary.Data
+namespace StoreBytes.DataAccess.Data
 {
     public interface IDatabaseData
     {

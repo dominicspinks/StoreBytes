@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using StoreBytesAPI.Models;
-using StoreBytesLibrary.Data;
-using StoreBytesLibrary.Utilities;
+using StoreBytes.API.Models;
+using StoreBytes.DataAccess.Data;
+using StoreBytes.Common.Utilities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace StoreBytesAPI.Controllers
+namespace StoreBytes.API.Controllers
 {
     [Route("api/auth")]
     [ApiController]

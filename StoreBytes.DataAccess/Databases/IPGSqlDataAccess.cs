@@ -1,5 +1,5 @@
 ﻿
-namespace StoreBytesLibrary.Databases
+namespace StoreBytes.DataAccess.Databases
 {
     public interface IPGSqlDataAccess
     {

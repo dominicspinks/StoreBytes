@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StoreBytesLibrary.Utilities
+namespace StoreBytes.Common.Utilities
 {
     public static class SecurityHelper
     {

@@ -20,11 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StoreBytesLibrary\StoreBytesLibrary.csproj" />
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\PublishProfiles\" />
+    <ProjectReference Include="..\StoreBytes.Common\StoreBytes.Common.csproj" />
+    <ProjectReference Include="..\StoreBytes.DataAccess\StoreBytes.DataAccess.csproj" />
+    <ProjectReference Include="..\StoreBytes.Service\StoreBytes.Service.csproj" />
   </ItemGroup>
 
 </Project>

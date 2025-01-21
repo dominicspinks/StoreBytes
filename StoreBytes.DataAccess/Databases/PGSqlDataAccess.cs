@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Npgsql;
 
-namespace StoreBytesLibrary.Databases
+namespace StoreBytes.DataAccess.Databases
 {
     public class PGSqlDataAccess : IPGSqlDataAccess
     {

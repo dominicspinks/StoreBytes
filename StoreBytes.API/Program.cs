@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using StoreBytesLibrary.Data;
-using StoreBytesLibrary.Databases;
-using StoreBytesLibrary.Services;
+using StoreBytes.DataAccess.Data;
+using StoreBytes.DataAccess.Databases;
+using StoreBytes.Service.Files;
 using System.Text;
 using DotNetEnv;
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace StoreBytesLibrary.Utilities
+namespace StoreBytes.Common.Utilities
 {
     public static class ValidationHelper
     {

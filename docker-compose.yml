@@ -3,4 +3,4 @@ services:
     image: ${DOCKER_REGISTRY-}storebytesapi
     build:
       context: .
-      dockerfile: StoreBytesAPI/Dockerfile
+      dockerfile: StoreBytes.API/Dockerfile

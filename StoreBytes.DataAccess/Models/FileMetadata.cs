@@ -1,4 +1,4 @@
-﻿namespace StoreBytesLibrary.Models
+﻿namespace StoreBytes.DataAccess.Models
 {
     public class FileMetadata
     {

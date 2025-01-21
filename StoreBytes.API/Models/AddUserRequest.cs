@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace StoreBytesAPI.Models
+namespace StoreBytes.API.Models
 {
     public class AddUserRequest
     {
