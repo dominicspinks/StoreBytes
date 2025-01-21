@@ -2,10 +2,10 @@
 
 namespace StoreBytes.API.Models
 {
-    public class CreateBucketRequest
+    public class AddUserRequestModel
     {
         [Required]
         [MaxLength(255)]
-        public string BucketName { get; set; }
+        public string Email { get; set; }
     }
 }

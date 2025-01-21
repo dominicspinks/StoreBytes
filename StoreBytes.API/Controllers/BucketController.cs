@@ -19,7 +19,7 @@ namespace StoreBytes.API.Controllers
         }
 
         [HttpPost("create")]
-        public IActionResult CreateBucket([FromBody] CreateBucketRequest request)
+        public IActionResult CreateBucket([FromBody] CreateBucketRequestModel request)
         {
             try
             {

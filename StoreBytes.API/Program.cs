@@ -5,6 +5,7 @@ using StoreBytes.DataAccess.Databases;
 using StoreBytes.Service.Files;
 using System.Text;
 using DotNetEnv;
+using StoreBytes.API.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,7 @@ builder.Services.AddSingleton<IPGSqlDataAccess, PGSqlDataAccess>();
 builder.Services.AddSingleton<IDatabaseData, PGSqlData>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddSingleton(new FileStorageService(builder.Configuration["FilesBasePath"]));
+builder.Services.AddScoped<JwtHelper>();
 
 
 // Configure JWT authentication

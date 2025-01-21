@@ -10,7 +10,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["StoreBytes.API/StoreBytes.API.csproj", "StoreBytes.API/"]
-COPY ["StoreBytesLibrary/StoreBytesLibrary.csproj", "StoreBytesLibrary/"]
+COPY ["StoreBytes.DataAccess/StoreBytes.DataAccess.csproj", "StoreBytes.DataAccess/"]
+COPY ["StoreBytes.Service/StoreBytes.Service.csproj", "StoreBytes.Service/"]
+COPY ["StoreBytes.Common/StoreBytes.Common.csproj", "StoreBytes.Common/"]
 RUN dotnet restore "./StoreBytes.API/StoreBytes.API.csproj"
 COPY . .
 WORKDIR "/src/StoreBytes.API"

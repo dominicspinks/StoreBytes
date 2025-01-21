@@ -62,15 +62,6 @@ namespace StoreBytes.DataAccess.Data
             return apiKey;
         }
 
-        public void AddUser(string email)
-        {
-            const string sql = @"
-                    INSERT INTO users (email, created_at, is_active)
-                    VALUES (@Email, NOW(), true)";
-
-            _db.SaveData(sql, new { Email = email });
-        }
-
         public void CreateBucket(int userId, string bucketName)
         {
             const string sqlCheck = @"
@@ -147,6 +138,18 @@ namespace StoreBytes.DataAccess.Data
                 sql,
                 new { BucketHash = bucketHash, FileHash = fileHash }
             ).FirstOrDefault();
+        }
+
+        public void AddUserWithPassword(string email, string passwordHash)
+        {
+            string sql = "INSERT INTO users (email, password_hash) VALUES (@Email, @PasswordHash)";
+            _db.SaveData(sql, new { Email = email, PasswordHash = passwordHash });
+        }
+
+        public UserModel GetUserByEmail(string email)
+        {
+            string sql = "SELECT id, email,created_at, is_active, password_hash FROM users WHERE email = @Email AND is_active = true";
+            return _db.LoadData<UserModel, dynamic>(sql, new { Email = email }).FirstOrDefault();
         }
     }
 }
