@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using StoreBytes.API.Security;
+using StoreBytes.Common.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -18,7 +19,7 @@ namespace StoreBytes.API.Utilities
         public string GenerateJwtToken(int userId, int expirationMinutes, bool isApiKeyToken = false)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_config["JWT_SECRET"]);
+            var key = Encoding.ASCII.GetBytes(_config[ConfigurationKeys.Shared.JwtSecret]);
 
             var claims = new List<Claim>
             {

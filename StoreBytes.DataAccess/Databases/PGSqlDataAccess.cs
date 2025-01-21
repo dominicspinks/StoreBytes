@@ -2,12 +2,14 @@
 using System.Data;
 using Dapper;
 using Npgsql;
+using StoreBytes.Common.Configuration;
 
 namespace StoreBytes.DataAccess.Databases
 {
     public class PGSqlDataAccess : IPGSqlDataAccess
     {
         private readonly IConfiguration _config;
+        private readonly string? _connectionString;
 
         static PGSqlDataAccess()
         {
@@ -18,6 +20,7 @@ namespace StoreBytes.DataAccess.Databases
         public PGSqlDataAccess(IConfiguration config)
         {
             _config = config;
+            _connectionString = _config[ConfigurationKeys.Api.DatabaseUrl];
         }
 
         public List<T> LoadData<T, U>(
@@ -25,7 +28,6 @@ namespace StoreBytes.DataAccess.Databases
             U parameters,
             dynamic? options = null)
         {
-            string? connectionString = _config["DATABASE_URL"];
             CommandType commandType = CommandType.Text;
 
             if (options?.IsStoredProcedure != null && options?.IsStoredProcedure == true)
@@ -33,7 +35,7 @@ namespace StoreBytes.DataAccess.Databases
                 commandType = CommandType.StoredProcedure;
             }
 
-            using (IDbConnection connection = new NpgsqlConnection(connectionString))
+            using (IDbConnection connection = new NpgsqlConnection(_connectionString))
             {
                 List<T> rows = connection.Query<T>(sqlStatement, parameters, commandType: commandType).ToList();
                 return rows;
@@ -45,7 +47,6 @@ namespace StoreBytes.DataAccess.Databases
             T parameters,
             dynamic? options = null)
         {
-            string? connectionString = _config["DATABASE_URL"];
             CommandType commandType = CommandType.Text;
 
             if (options?.IsStoredProcedure != null && options?.IsStoredProcedure == true)
@@ -53,7 +54,7 @@ namespace StoreBytes.DataAccess.Databases
                 commandType = CommandType.StoredProcedure;
             }
 
-            using (IDbConnection connection = new NpgsqlConnection(connectionString))
+            using (IDbConnection connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Execute(sqlStatement, parameters, commandType: commandType);
             }

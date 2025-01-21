@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using StoreBytes.Web.Utilities;
+using StoreBytes.Common.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,7 @@ builder.Services.AddHttpContextAccessor();
 // Configure HTTP client for AuthService
 builder.Services.AddHttpClient<AuthService>(client =>
 {
-    var apiUrl = builder.Configuration["STOREBYTESAPI_URL"];
+    var apiUrl = builder.Configuration[ConfigurationKeys.WebApp.StoreBytesApiUrl];
     if (string.IsNullOrEmpty(apiUrl))
     {
         throw new Exception("API URL is not configured. Ensure the STOREBYTESAPI_URL environment variable is set.");
@@ -31,7 +32,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWT_SECRET"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration[ConfigurationKeys.Shared.JwtSecret])),
             ValidateIssuer = false,
             ValidateAudience = false,
             ClockSkew = TimeSpan.Zero

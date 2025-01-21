@@ -2,6 +2,7 @@
 using StoreBytes.DataAccess.Databases;
 using StoreBytes.DataAccess.Models;
 using StoreBytes.Common.Utilities;
+using StoreBytes.Common.Configuration;
 
 namespace StoreBytes.DataAccess.Data
 {
@@ -15,7 +16,7 @@ namespace StoreBytes.DataAccess.Data
         {
             _db = db;
             _config = config;
-            _hashSecret = _config["HASH_SECRET"] ?? "";
+            _hashSecret = _config[ConfigurationKeys.Shared.HashSecret] ?? "";
         }
 
         public UserToken? GetUserTokenByApiKey(string apiKey)

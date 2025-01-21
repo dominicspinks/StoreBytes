@@ -6,6 +6,7 @@ using StoreBytes.Service.Files;
 using System.Text;
 using DotNetEnv;
 using StoreBytes.API.Utilities;
+using StoreBytes.Common.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,13 +14,13 @@ Env.Load();
 
 var defaultEnvironmentVariables = new Dictionary<string, string>
 {
-    { "HASH_SECRET", "this_is_the_hash_secret" },
-    { "JWT_SECRET", "this_is_the_jwt_secret" }
+    { ConfigurationKeys.Shared.HashSecret, "this_is_the_hash_secret" },
+    { ConfigurationKeys.Shared.JwtSecret, "this_is_the_jwt_secret" }
 };
 
 var requiredEnvironmentVariables = new List<string>
 {
-    "DATABASE_URL"
+    ConfigurationKeys.Api.DatabaseUrl
 };
 
 foreach (var variable in requiredEnvironmentVariables)
@@ -46,12 +47,12 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<IPGSqlDataAccess, PGSqlDataAccess>();
 builder.Services.AddSingleton<IDatabaseData, PGSqlData>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddSingleton(new FileStorageService(builder.Configuration["FilesBasePath"]));
+builder.Services.AddSingleton(new FileStorageService(builder.Configuration[ConfigurationKeys.Api.FilesBasePath]));
 builder.Services.AddScoped<JwtHelper>();
 
 
 // Configure JWT authentication
-var jwtKey = builder.Configuration["JWT_SECRET"];
+var jwtKey = builder.Configuration[ConfigurationKeys.Shared.JwtSecret];
 var key = Encoding.ASCII.GetBytes(jwtKey);
 builder.Services.AddAuthentication(options =>
 {

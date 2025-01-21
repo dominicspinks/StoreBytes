@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StoreBytes.DataAccess.Data;
 using StoreBytes.Service.Files;
 using StoreBytes.Common.Utilities;
+using StoreBytes.Common.Configuration;
 
 [Route("api/files")]
 [ApiController]
@@ -44,7 +45,7 @@ public class FileController : ControllerBase
 
         // Generate hashed file name
         string fileExtension = Path.GetExtension(file.FileName);
-        string secret = _config["HASH_SECRET"] ?? "";
+        string secret = _config[ConfigurationKeys.Shared.HashSecret] ?? "";
         string hashedName = $"{SecurityHelper.HashBase64Url($"{bucket.Id}+{file.FileName}", secret, 10)}{fileExtension}";
 
         // Save the file using the file storage service
