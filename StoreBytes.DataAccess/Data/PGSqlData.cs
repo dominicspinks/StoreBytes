@@ -77,7 +77,7 @@ namespace StoreBytes.DataAccess.Data
                 throw new Exception("Bucket name must be unique for the user.");
             }
 
-            string hashedName = SecurityHelper.HashBase64Url($"{userId}{bucketName}", _hashSecret, 20);
+            string hashedName = SecurityHelper.HashBase64Url($"{Guid.NewGuid()}", _hashSecret, 20);
 
             const string sqlInsert = @"
                     INSERT INTO buckets (name, user_id, hashed_name, created_at, is_active) 
