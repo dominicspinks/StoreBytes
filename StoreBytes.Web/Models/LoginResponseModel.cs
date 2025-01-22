@@ -1,6 +1,6 @@
 ﻿namespace StoreBytes.Web.Models
 {
-    public class LoginResponse
+    public class LoginResponseModel
     {
         public string Token { get; set; }
     }

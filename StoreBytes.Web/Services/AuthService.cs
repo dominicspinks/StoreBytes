@@ -59,7 +59,7 @@ namespace StoreBytes.Web.Services
                 _logger.LogInformation("Attempting to log in user with email: {Email}.", email);
                 var response = await _httpClient.PostAsync("/api/auth/login", content);
 
-                var loginResponse = await HttpRequestHelper.HandleResponseAsync<LoginResponse>(response);
+                var loginResponse = await HttpRequestHelper.HandleResponseAsync<LoginResponseModel>(response);
 
                 if (string.IsNullOrEmpty(loginResponse?.Token))
                 {
