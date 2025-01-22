@@ -4,6 +4,7 @@ using StoreBytes.DataAccess.Data;
 using StoreBytes.Service.Files;
 using StoreBytes.Common.Utilities;
 using StoreBytes.Common.Configuration;
+using StoreBytes.API.Utilities;
 
 [Route("api/files")]
 [ApiController]
@@ -46,17 +47,17 @@ public class FileController : ControllerBase
         // Generate hashed file name
         string fileExtension = Path.GetExtension(file.FileName);
         string secret = _config[ConfigurationKeys.Shared.HashSecret] ?? "";
-        string hashedName = $"{SecurityHelper.HashBase64Url($"{bucket.Id}+{file.FileName}", secret, 10)}{fileExtension}";
+        string fileHash = $"{SecurityHelper.HashBase64Url($"{bucket.Id}+{file.FileName}", secret, 10)}{fileExtension}";
 
         // Save the file using the file storage service
         string filePath;
         using (var stream = file.OpenReadStream())
         {
-            filePath = _files.SaveFile(bucket.HashedName, hashedName, stream);
+            filePath = _files.SaveFile(bucket.BucketHash, fileHash, stream);
         }
 
         // Save metadata to the database
-        _db.AddFileMetadata(bucket.Id, file.FileName, hashedName, filePath, file.Length, file.ContentType);
+        _db.AddFileMetadata(bucket.Id, file.FileName, fileHash, filePath, file.Length, file.ContentType);
 
         return Ok(new { url = $"{filePath}" });
     }
@@ -82,11 +83,43 @@ public class FileController : ControllerBase
             }
 
             // Return the file with appropriate content type
-            return File(fileStream, fileMetadata.ContentType, fileMetadata.OriginalName);
+            return File(fileStream, fileMetadata.ContentType, fileMetadata.FileName);
         }
         catch (Exception ex)
         {
             return StatusCode(500, new { error = ex.Message});
+        }
+    }
+
+    [HttpGet("list/{hash}")]
+    public IActionResult GetFilesByBucketHash(string hash)
+    {
+        try
+        {
+            var bucket = _db.GetBucketByHash(hash);
+            if (bucket == null)
+            {
+                return NotFound(new { error = "Bucket not found." });
+            }
+
+            // Validate ownership
+            var validationResponse = UserValidationHelper.ValidateOwnership(bucket, User);
+            if (validationResponse != null)
+            {
+                return validationResponse;
+            }
+
+            var files = _db.GetFilesByBucketHash(hash);
+            if (files == null || !files.Any())
+            {
+                return NotFound("No files found for the given bucket.");
+            }
+
+            return Ok(files);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 }

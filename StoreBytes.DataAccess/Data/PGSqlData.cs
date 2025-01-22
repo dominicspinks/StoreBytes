@@ -77,26 +77,26 @@ namespace StoreBytes.DataAccess.Data
                 throw new Exception("Bucket name must be unique for the user.");
             }
 
-            string hashedName = SecurityHelper.HashBase64Url($"{Guid.NewGuid()}", _hashSecret, 20);
+            string bucketHash = SecurityHelper.HashBase64Url($"{Guid.NewGuid()}", _hashSecret, 20);
 
             const string sqlInsert = @"
-                    INSERT INTO buckets (name, user_id, hashed_name, created_at, is_active) 
-                    VALUES (@BucketName, @UserId, @HashedName, NOW(), true)";
+                    INSERT INTO buckets (bucket_name, user_id, bucket_hash, created_at, is_active) 
+                    VALUES (@BucketName, @UserId, @BucketHash, NOW(), true)";
 
-            _db.SaveData(sqlInsert, new { BucketName = bucketName, UserId = userId, HashedName = hashedName });
+            _db.SaveData(sqlInsert, new { BucketName = bucketName, UserId = userId, BucketHash = bucketHash });
         }
 
-        public void AddFileMetadata(int bucketId, string originalName, string hashedName, string filePath, long size, string contentType)
+        public void AddFileMetadata(int bucketId, string fileName, string fileHash, string filePath, long size, string contentType)
         {
             const string sql = @"
-                    INSERT INTO files (bucket_id, original_name, hashed_name, file_path, size, content_type, created_at)
-                    VALUES (@BucketId, @OriginalName, @HashedName, @FilePath, @Size, @ContentType, NOW())";
+                    INSERT INTO files (bucket_id, file_name, file_hash, file_path, size, content_type, created_at)
+                    VALUES (@BucketId, @FileName, @FileHash, @FilePath, @Size, @ContentType, NOW())";
 
             _db.SaveData(sql, new
             {
                 BucketId = bucketId,
-                OriginalName = originalName,
-                HashedName = hashedName,
+                FileName = fileName,
+                FileHash = fileHash,
                 FilePath = filePath,
                 Size = size,
                 ContentType = contentType
@@ -106,7 +106,7 @@ namespace StoreBytes.DataAccess.Data
         public BucketModel? GetBucketById(int bucketId, int userId)
         {
             const string sql = @"
-                    SELECT id, name, hashed_name, user_id, created_at, is_active
+                    SELECT id, bucket_name, bucket_hash, user_id, created_at, is_active
                     FROM buckets
                     WHERE id = @BucketId AND user_id = @UserId AND is_active = true";
 
@@ -118,9 +118,9 @@ namespace StoreBytes.DataAccess.Data
         public BucketModel? GetBucketByName(string bucketName, int userId)
         {
             const string sql = @"
-                    SELECT id, name, hashed_name, user_id, created_at, is_active
+                    SELECT id, bucket_name, bucket_hash, user_id, created_at, is_active
                     FROM buckets
-                    WHERE name = @BucketName AND user_id = @UserId AND is_active = true";
+                    WHERE bucket_name = @BucketName AND user_id = @UserId AND is_active = true";
 
             var results = _db.LoadData<BucketModel, dynamic>(sql, new { BucketName = bucketName, UserId = userId });
 
@@ -130,10 +130,10 @@ namespace StoreBytes.DataAccess.Data
         public FileMetadataModel? GetFileMetadata(string bucketHash, string fileHash)
         {
             const string sql = @"
-                    SELECT f.original_name, f.content_type, f.file_path
+                    SELECT f.file_name, f.content_type, f.file_path
                     FROM files f
                     INNER JOIN buckets b ON f.bucket_id = b.id
-                    WHERE b.hashed_name = @BucketHash AND f.hashed_name = @FileHash";
+                    WHERE b.bucket_hash = @BucketHash AND f.file_hash = @FileHash";
 
             return _db.LoadData<FileMetadataModel, dynamic>(
                 sql,
@@ -158,18 +158,81 @@ namespace StoreBytes.DataAccess.Data
             string sql = @"
                     SELECT 
                         b.id,
-                        b.name,
-                        b.hashed_name,
+                        b.bucket_name,
+                        b.bucket_hash,
                         b.is_active,
                         COUNT(f.id) AS FileCount,
                         COALESCE(SUM(f.size), 0) AS TotalSize
                     FROM buckets b
                     LEFT JOIN files f ON b.id = f.bucket_id
                     WHERE b.user_id = @UserId
-                    GROUP BY b.id, b.name, b.hashed_name, b.is_active;
+                    GROUP BY b.id, b.bucket_name, b.bucket_hash, b.is_active;
                 ";
 
             return _db.LoadData<FullBucketModel, dynamic>(sql, new { UserId = userId });
+        }
+
+        public BucketModel GetBucketByHash(string hash)
+        {
+            string sql = @"
+                SELECT 
+                    id, 
+                    user_id, 
+                    bucket_name, 
+                    bucket_hash, 
+                    is_active, 
+                    created_at 
+                FROM buckets 
+                WHERE bucket_hash = @Hash 
+                ORDER BY created_at
+                LIMIT 1";
+            return _db.LoadData<BucketModel, dynamic>(sql, new { Hash = hash }).FirstOrDefault();
+        }
+
+        public List<FileModel> GetFilesByBucketHash(string bucketHash)
+        {
+            string sql = @"
+                SELECT 
+                    f.id, 
+                    b.user_id,
+                    f.bucket_id, 
+                    f.file_name, 
+                    f.file_hash,
+                    f.file_path, 
+                    f.size, 
+                    f.created_at 
+                FROM files f
+                INNER JOIN buckets b ON f.bucket_id = b.id
+                WHERE b.bucket_hash = @Hash
+                ORDER BY f.created_at";
+            return _db.LoadData<FileModel, dynamic>(sql, new { Hash = bucketHash });
+        }
+
+        public bool SetBucketActiveState(string hash, bool isActive)
+        {
+            string sql = "UPDATE buckets SET is_active = @IsActive WHERE bucket_hash = @Hash";
+            int rowsAffected = _db.SaveData(sql, new { IsActive = isActive, Hash = hash });
+            return rowsAffected > 0;
+        }
+
+        public bool DeleteBucket(string hash)
+        {
+            return _db.ExecuteTransaction(transaction =>
+            {
+                // Delete associated files
+                string deleteFilesSql = @"
+                    DELETE FROM files 
+                    WHERE bucket_id = (
+                        SELECT id FROM buckets WHERE bucket_hash = @Hash
+                    )";
+                _db.SaveData(deleteFilesSql, new { Hash = hash }, transaction: transaction);
+
+                // Delete the bucket
+                string deleteBucketSql = "DELETE FROM buckets WHERE bucket_hash = @Hash";
+                int rowsAffected = _db.SaveData(deleteBucketSql, new { Hash = hash }, transaction: transaction);
+
+                return rowsAffected > 0;
+            });
         }
     }
 }

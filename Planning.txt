@@ -50,12 +50,12 @@ These are the overall features to add to the application. They are to be split i
 		-	Refactor to use class for environment variable names - done
 		-	Sign in - done
 		-	Sign out - done
-		-	Generate API Key
-		-	List buckets
+		-	List buckets - done
 		-	Delete bucket
 		-	List files in bucket
 			-	Display url
 		-	Delete file from bucket
+		-	Generate API Key
 -	V1.2
 	-	Delete API key
 	-	Change password
@@ -70,5 +70,73 @@ These are the overall features to add to the application. They are to be split i
 		-	Someone registers
 		-	Someone reaches their data cap
 	-	UI for managing StoreBytes users
+	-	Buckets
+		-	Option to be private or public
+			-	Private buckets require a token in the request header
+		-	Add search option in bucket list page
 		
 
+
+### Design
+
+#### Bucket List page
+
+-	Button to add new
+	-	Add bucket popup modal
+		-	Name field
+		-	Submit to create the bucket
+-	List of buckets for user
+	-	Name
+	-	Active
+	-	Number of files
+	-	Total Size of bucket
+	-   Clicking the list item goes to the bucket details page for that bucket
+
+-	API Endpoints required:
+	-	Get List of buckets by user ID
+
+#### Bucket Details page
+
+-	Details
+	-	name
+	-	Identifier (hashed name)
+	-	Create date
+	-	Edit button
+		-	Allows the user to change the bucket name (this would not change the identifier, possibly the hash generation for the bucket name needs to change)
+	-	Disable button (visible only if is_active = true)
+		-	Shows confirmation prompt/window
+		-	Sets is_active to false
+	-	Enable button (visible only if is_active = false)
+		-	Shows confirmation prompt/window
+		-	Sets is_active to true
+	-	Delete button
+		-	Shows confirmation prompt/window
+		-	Removes the bucket and all files belonging to the bucket from the database
+-	List of files
+	-	name
+	-	Identifier (file_path)
+	-	Full URL (link)
+	-	Size
+	-	Create date
+	
+-	API Endpoints required:
+	-	Get Bucket details by bucket hash
+	-	Get List of files by bucket id or hash
+
+#### Profile page
+
+-	Add API key button
+	-	Popup modal
+		-	Displays the new API key value
+-	API Key list
+	-	Description
+	-	Create date
+	-	Expiry date
+	-	Active
+	
+-	API Endpoints required:
+	-	Get list of API keys by user Id
+	
+#### API Page
+
+-	This is a page that will give the user information on how to use the API for creating buckets, uploading and retrieving files.
