@@ -32,16 +32,20 @@ namespace StoreBytes.API.Controllers
 
         [HttpPost("token")]
         [AllowAnonymous]
-        public IActionResult GenerateToken([FromBody] string apiKey)
+        public IActionResult GenerateToken([FromBody] TokenRequestModel request)
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(request.ApiKey))
+                {
+                    return BadRequest(new { error = "API key is required." });
+                }
                 // Validate API key
-                var userToken = _db.GetUserTokenByApiKey(apiKey);
+                var userToken = _db.GetUserTokenByApiKey(request.ApiKey);
 
                 if (userToken == null)
                 {
-                    return Unauthorized("Invalid or inactive API key.");
+                    return Unauthorized(new { error = "Invalid or inactive API key."});
                 }
 
                 var token = _jwtHelper.GenerateJwtToken(userToken.UserId, 15, true);
@@ -50,7 +54,7 @@ namespace StoreBytes.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new { error = ex.Message});
             }
         }
 
@@ -64,13 +68,13 @@ namespace StoreBytes.API.Controllers
                 var tokenType = User.FindFirst(CustomClaimTypes.TokenType)?.Value;
                 if (string.IsNullOrWhiteSpace(tokenType) || tokenType != TokenTypeValues.User)
                 {
-                    return Unauthorized("Invalid token type. API keys cannot be used for this operation.");
+                    return Unauthorized(new { error = "Invalid token type. API keys cannot be used for this operation." });
                 }
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
                 {
-                    return Unauthorized("Invalid user ID.");
+                    return Unauthorized(new { error = "Invalid user ID." });
                 }
 
                 string newApiKey = _db.SaveApiKey(userId);
@@ -78,7 +82,7 @@ namespace StoreBytes.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new { error = ex.Message});
             }
         }
 
@@ -91,25 +95,25 @@ namespace StoreBytes.API.Controllers
                 // Validate input
                 if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
                 {
-                    return BadRequest("Email and password are required.");
+                    return BadRequest(new { error = "Email and password are required." });
                 }
 
                 // Validate email format
                 if (!ValidationHelper.IsValidEmail(request.Email))
                 {
-                    return BadRequest("Invalid email format.");
+                    return BadRequest(new { error = "Invalid email format." });
                 }
 
                 // Validate password strength
                 if (!ValidationHelper.IsStrongPassword(request.Password))
                 {
-                    return BadRequest("Password must be at least 8 characters.");
+                    return BadRequest(new { error = "Password must be at least 8 characters." });
                 }
 
                 // Check if the email is already registered
                 if (_db.GetUserByEmail(request.Email) != null)
                 {
-                    return Conflict("Email is already registered.");
+                    return Conflict(new { error = "Email is already registered." });
                 }
 
                 // Hash the password
@@ -118,11 +122,11 @@ namespace StoreBytes.API.Controllers
                 // Save the user to the database
                 _db.AddUserWithPassword(request.Email, hashedPassword);
 
-                return Ok("User registered successfully.");
+                return Ok(new { message = "User registered successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new { error = ex.Message});
             }
         }
 
@@ -135,14 +139,14 @@ namespace StoreBytes.API.Controllers
                 // Validate input
                 if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
                 {
-                    return BadRequest("Email and password are required.");
+                    return BadRequest(new { error = "Email and password are required." });
                 }
 
                 // Retrieve user from the database
                 var user = _db.GetUserByEmail(request.Email);
                 if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 {
-                    return Unauthorized("Invalid email or password.");
+                    return Unauthorized(new { error = "Invalid email or password." });
                 }
 
                 var token = _jwtHelper.GenerateJwtToken(user.Id, 60, false);
@@ -151,7 +155,7 @@ namespace StoreBytes.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new { error = ex.Message});
             }
         }
 

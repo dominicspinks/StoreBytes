@@ -25,7 +25,7 @@ namespace StoreBytes.Service.Files
                 fileStream.CopyTo(stream);
             }
 
-            return Path.Combine(bucketHash, hashedFileName);
+            return $"{bucketHash}/{hashedFileName}";
         }
 
         public Stream? GetFileStream(string bucketHash, string fileHash)

@@ -25,30 +25,53 @@ namespace StoreBytes.API.Controllers
             {
                 if (string.IsNullOrWhiteSpace(request.BucketName))
                 {
-                    return BadRequest("Bucket name is required.");
+                    return BadRequest(new { error = "Bucket name is required." });
                 }
 
                 // Validate bucket name format
                 if (!ValidationHelper.IsValidBucketName(request.BucketName))
                 {
-                    return BadRequest("Bucket name must start with a letter and contain only alphabetic characters.");
+                    return BadRequest(new { error = "Bucket name must start with a letter and contain only alphabetic characters." });
                 }
 
                 // Extract user ID from the token
                 var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
                 {
-                    return Unauthorized("Invalid user ID.");
+                    return Unauthorized(new { error = "Invalid user ID." });
                 }
 
                 // Create the bucket
                 _db.CreateBucket(userId, request.BucketName);
 
-                return Ok("Bucket created successfully.");
+                return Ok(new { message = "Bucket created successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new { error = ex.Message});
+            }
+        }
+
+        [HttpGet("list")]
+        public IActionResult GetBuckets()
+        {
+            try
+            {
+                // Extract user ID from the token
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Unauthorized(new { error = "Invalid user ID." });
+                }
+
+                // Retrieve buckets for the user
+                var buckets = _db.GetBucketsByUserId(userId);
+
+                return Ok(buckets);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message});
             }
         }
     }

@@ -19,7 +19,7 @@ namespace StoreBytes.DataAccess.Data
             _hashSecret = _config[ConfigurationKeys.Shared.HashSecret] ?? "";
         }
 
-        public UserToken? GetUserTokenByApiKey(string apiKey)
+        public UserTokenModel? GetUserTokenByApiKey(string apiKey)
         {
             // Hash the provided API key
             string hashedApiKey = SecurityHelper.HashBase64(apiKey, _hashSecret);
@@ -33,7 +33,7 @@ namespace StoreBytes.DataAccess.Data
                         AND (t.expires_at IS NULL OR t.expires_at > NOW()) 
                         AND u.is_active = true";
 
-            var results = _db.LoadData<UserToken, dynamic>(sql, new { ApiKey = hashedApiKey });
+            var results = _db.LoadData<UserTokenModel, dynamic>(sql, new { ApiKey = hashedApiKey });
             return results.FirstOrDefault();
         }
 
@@ -103,31 +103,31 @@ namespace StoreBytes.DataAccess.Data
             });
         }
 
-        public Bucket? GetBucketById(int bucketId, int userId)
+        public BucketModel? GetBucketById(int bucketId, int userId)
         {
             const string sql = @"
                     SELECT id, name, hashed_name, user_id, created_at, is_active
                     FROM buckets
                     WHERE id = @BucketId AND user_id = @UserId AND is_active = true";
 
-            var results = _db.LoadData<Bucket, dynamic>(sql, new { BucketId = bucketId, UserId = userId });
+            var results = _db.LoadData<BucketModel, dynamic>(sql, new { BucketId = bucketId, UserId = userId });
 
             return results.FirstOrDefault();
         }
 
-        public Bucket? GetBucketByName(string bucketName, int userId)
+        public BucketModel? GetBucketByName(string bucketName, int userId)
         {
             const string sql = @"
                     SELECT id, name, hashed_name, user_id, created_at, is_active
                     FROM buckets
                     WHERE name = @BucketName AND user_id = @UserId AND is_active = true";
 
-            var results = _db.LoadData<Bucket, dynamic>(sql, new { BucketName = bucketName, UserId = userId });
+            var results = _db.LoadData<BucketModel, dynamic>(sql, new { BucketName = bucketName, UserId = userId });
 
             return results.FirstOrDefault();
         }
 
-        public FileMetadata? GetFileMetadata(string bucketHash, string fileHash)
+        public FileMetadataModel? GetFileMetadata(string bucketHash, string fileHash)
         {
             const string sql = @"
                     SELECT f.original_name, f.content_type, f.file_path
@@ -135,7 +135,7 @@ namespace StoreBytes.DataAccess.Data
                     INNER JOIN buckets b ON f.bucket_id = b.id
                     WHERE b.hashed_name = @BucketHash AND f.hashed_name = @FileHash";
 
-            return _db.LoadData<FileMetadata, dynamic>(
+            return _db.LoadData<FileMetadataModel, dynamic>(
                 sql,
                 new { BucketHash = bucketHash, FileHash = fileHash }
             ).FirstOrDefault();
@@ -151,6 +151,25 @@ namespace StoreBytes.DataAccess.Data
         {
             string sql = "SELECT id, email,created_at, is_active, password_hash FROM users WHERE email = @Email AND is_active = true";
             return _db.LoadData<UserModel, dynamic>(sql, new { Email = email }).FirstOrDefault();
+        }
+
+        public List<FullBucketModel> GetBucketsByUserId(int userId)
+        {
+            string sql = @"
+                    SELECT 
+                        b.id,
+                        b.name,
+                        b.hashed_name,
+                        b.is_active,
+                        COUNT(f.id) AS FileCount,
+                        COALESCE(SUM(f.size), 0) AS TotalSize
+                    FROM buckets b
+                    LEFT JOIN files f ON b.id = f.bucket_id
+                    WHERE b.user_id = @UserId
+                    GROUP BY b.id, b.name, b.hashed_name, b.is_active;
+                ";
+
+            return _db.LoadData<FullBucketModel, dynamic>(sql, new { UserId = userId });
         }
     }
 }

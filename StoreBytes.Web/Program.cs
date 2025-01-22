@@ -6,16 +6,22 @@ using System.Text;
 using StoreBytes.Web.Utilities;
 using StoreBytes.Common.Configuration;
 
-var builder = WebApplication.CreateBuilder(args);
-
 Env.Load();
 
-builder.Configuration.AddEnvironmentVariables();
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 builder.Services.AddHttpContextAccessor();
 
-// Configure HTTP client for AuthService
-builder.Services.AddHttpClient<AuthService>(client =>
+// Configure HTTP client
+builder.Services.AddHttpClient("StoreBytesAPI", client =>
 {
     var apiUrl = builder.Configuration[ConfigurationKeys.WebApp.StoreBytesApiUrl];
     if (string.IsNullOrEmpty(apiUrl))
@@ -24,6 +30,9 @@ builder.Services.AddHttpClient<AuthService>(client =>
     }
     client.BaseAddress = new Uri(apiUrl);
 });
+
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<BucketService>();
 
 // Add JWT Bearer Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

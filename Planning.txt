@@ -38,23 +38,37 @@ These are the overall features to add to the application. They are to be split i
 
 ## Plan
 
--	MVP (API only, no UI)
+-	MVP (API only, no UI) - Done
 	-	Register account (with manual verification) - done (minus verification, this will be added in the future)
 	-	Get auth token (using API token) - done
 	-	Create bucket - done
 	-	Upload file - done
 	-	Download file - done
--	Phase 1
+-	V1.1
 	-   Create UI
-		-	Sign up
-			-	Create a new account
-		-	Refactor to use class for environment variable names
-		-	Sign in
-		-	Sign out
+		-	Sign up - done
+		-	Refactor to use class for environment variable names - done
+		-	Sign in - done
+		-	Sign out - done
 		-	Generate API Key
 		-	List buckets
 		-	Delete bucket
 		-	List files in bucket
 			-	Display url
 		-	Delete file from bucket
+-	V1.2
+	-	Delete API key
+	-	Change password
+	-	Forgot password
+	-	Email 2fa on sign up
+	-	Add security features
+		-	Limit file size
+		-	Add Data Cap
+		-	Encrypt files on disk
+-	V1.3
+	-	Email notifications to me
+		-	Someone registers
+		-	Someone reaches their data cap
+	-	UI for managing StoreBytes users
+		
 

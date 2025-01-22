@@ -26,21 +26,21 @@ public class FileController : ControllerBase
     {
         if (file == null || file.Length == 0)
         {
-            return BadRequest("File is required.");
+            return BadRequest(new { error = "File is required." });
         }
 
         // Validate the user exists
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
         {
-            return Unauthorized("Invalid user ID.");
+            return Unauthorized(new { error = "Invalid user ID." });
         }
 
         // Retrieve the bucket
         var bucket = _db.GetBucketByName(bucketName, userId);
         if (bucket == null)
         {
-            return NotFound("Bucket not found.");
+            return NotFound(new { error = "Bucket not found." });
         }
 
         // Generate hashed file name
@@ -71,14 +71,14 @@ public class FileController : ControllerBase
             var fileMetadata = _db.GetFileMetadata(bucketHash, fileHash);
             if (fileMetadata == null)
             {
-                return NotFound("File not found.");
+                return NotFound(new { error = "File not found." });
             }
 
             // Retrieve the file from the file system
             var fileStream = _files.GetFileStream(bucketHash, fileHash);
             if (fileStream == null)
             {
-                return NotFound("File not found on disk.");
+                return NotFound(new { error = "File not found on disk." });
             }
 
             // Return the file with appropriate content type
@@ -86,7 +86,7 @@ public class FileController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
+            return StatusCode(500, new { error = ex.Message});
         }
     }
 }

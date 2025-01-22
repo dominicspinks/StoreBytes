@@ -1,7 +1,7 @@
 ﻿
 namespace StoreBytes.DataAccess.Models
 {
-    public class UserToken
+    public class UserTokenModel
     {
         public int Id { get; set; }
         public int UserId { get; set; }
