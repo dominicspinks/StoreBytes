@@ -19,6 +19,8 @@ namespace StoreBytes.DataAccess.Data
             _hashSecret = _config[ConfigurationKeys.Shared.HashSecret] ?? "";
         }
 
+        #region Auth
+
         public UserTokenModel? GetUserTokenByApiKey(string apiKey)
         {
             // Hash the provided API key
@@ -36,6 +38,22 @@ namespace StoreBytes.DataAccess.Data
             var results = _db.LoadData<UserTokenModel, dynamic>(sql, new { KeyHash = hashedApiKey });
             return results.FirstOrDefault();
         }
+
+        public void AddUserWithPassword(string email, string passwordHash)
+        {
+            string sql = "INSERT INTO users (email, password_hash) VALUES (@Email, @PasswordHash)";
+            _db.SaveData(sql, new { Email = email, PasswordHash = passwordHash });
+        }
+
+        public UserModel GetUserByEmail(string email)
+        {
+            string sql = "SELECT id, email,created_at, is_active, password_hash FROM users WHERE email = @Email AND is_active = true";
+            return _db.LoadData<UserModel, dynamic>(sql, new { Email = email }).FirstOrDefault();
+        }
+
+        #endregion
+
+        #region Buckets
 
         public void CreateBucket(int userId, string bucketName)
         {
@@ -60,23 +78,6 @@ namespace StoreBytes.DataAccess.Data
             _db.SaveData(sqlInsert, new { BucketName = bucketName, UserId = userId, BucketHash = bucketHash });
         }
 
-        public void AddFileMetadata(int bucketId, string fileName, string fileHash, string filePath, long size, string contentType)
-        {
-            const string sql = @"
-                    INSERT INTO files (bucket_id, file_name, file_hash, file_path, size, content_type, created_at)
-                    VALUES (@BucketId, @FileName, @FileHash, @FilePath, @Size, @ContentType, NOW())";
-
-            _db.SaveData(sql, new
-            {
-                BucketId = bucketId,
-                FileName = fileName,
-                FileHash = fileHash,
-                FilePath = filePath,
-                Size = size,
-                ContentType = contentType
-            });
-        }
-
         public BucketModel? GetBucketById(int bucketId, int userId)
         {
             const string sql = @"
@@ -99,32 +100,6 @@ namespace StoreBytes.DataAccess.Data
             var results = _db.LoadData<BucketModel, dynamic>(sql, new { BucketName = bucketName, UserId = userId });
 
             return results.FirstOrDefault();
-        }
-
-        public FileMetadataModel? GetFileMetadata(string bucketHash, string fileHash)
-        {
-            const string sql = @"
-                    SELECT f.file_name, f.content_type, f.file_path
-                    FROM files f
-                    INNER JOIN buckets b ON f.bucket_id = b.id
-                    WHERE b.bucket_hash = @BucketHash AND f.file_hash = @FileHash";
-
-            return _db.LoadData<FileMetadataModel, dynamic>(
-                sql,
-                new { BucketHash = bucketHash, FileHash = fileHash }
-            ).FirstOrDefault();
-        }
-
-        public void AddUserWithPassword(string email, string passwordHash)
-        {
-            string sql = "INSERT INTO users (email, password_hash) VALUES (@Email, @PasswordHash)";
-            _db.SaveData(sql, new { Email = email, PasswordHash = passwordHash });
-        }
-
-        public UserModel GetUserByEmail(string email)
-        {
-            string sql = "SELECT id, email,created_at, is_active, password_hash FROM users WHERE email = @Email AND is_active = true";
-            return _db.LoadData<UserModel, dynamic>(sql, new { Email = email }).FirstOrDefault();
         }
 
         public List<FullBucketModel> GetBucketsByUserId(int userId)
@@ -163,25 +138,6 @@ namespace StoreBytes.DataAccess.Data
             return _db.LoadData<BucketModel, dynamic>(sql, new { Hash = hash }).FirstOrDefault();
         }
 
-        public List<FileModel> GetFilesByBucketHash(string bucketHash)
-        {
-            string sql = @"
-                SELECT 
-                    f.id, 
-                    b.user_id,
-                    f.bucket_id, 
-                    f.file_name, 
-                    f.file_hash,
-                    f.file_path, 
-                    f.size, 
-                    f.created_at 
-                FROM files f
-                INNER JOIN buckets b ON f.bucket_id = b.id
-                WHERE b.bucket_hash = @Hash
-                ORDER BY f.created_at";
-            return _db.LoadData<FileModel, dynamic>(sql, new { Hash = bucketHash });
-        }
-
         public bool SetBucketActiveState(string hash, bool isActive)
         {
             string sql = "UPDATE buckets SET is_active = @IsActive WHERE bucket_hash = @Hash";
@@ -210,7 +166,7 @@ namespace StoreBytes.DataAccess.Data
         }
 
         public bool UpdateBucketDetails(string bucketHash, string bucketName, bool isActive)
-        { 
+        {
             string sql = $@"
                 UPDATE buckets
                 SET 
@@ -228,6 +184,64 @@ namespace StoreBytes.DataAccess.Data
             return rowsAffected > 0;
         }
 
+        #endregion
+
+        #region Files
+
+        public void AddFileMetadata(int bucketId, string fileName, string fileHash, string filePath, long size, string contentType)
+        {
+            const string sql = @"
+                    INSERT INTO files (bucket_id, file_name, file_hash, file_path, size, content_type, created_at)
+                    VALUES (@BucketId, @FileName, @FileHash, @FilePath, @Size, @ContentType, NOW())";
+
+            _db.SaveData(sql, new
+            {
+                BucketId = bucketId,
+                FileName = fileName,
+                FileHash = fileHash,
+                FilePath = filePath,
+                Size = size,
+                ContentType = contentType
+            });
+        }
+
+        public FileMetadataModel? GetFileMetadata(string bucketHash, string fileHash)
+        {
+            const string sql = @"
+                    SELECT f.file_name, f.content_type, f.file_path
+                    FROM files f
+                    INNER JOIN buckets b ON f.bucket_id = b.id
+                    WHERE b.bucket_hash = @BucketHash AND f.file_hash = @FileHash";
+
+            return _db.LoadData<FileMetadataModel, dynamic>(
+                sql,
+                new { BucketHash = bucketHash, FileHash = fileHash }
+            ).FirstOrDefault();
+        }
+
+        public List<FileModel> GetFilesByBucketHash(string bucketHash)
+        {
+            string sql = @"
+                SELECT 
+                    f.id, 
+                    b.user_id,
+                    f.bucket_id, 
+                    f.file_name, 
+                    f.file_hash,
+                    f.file_path, 
+                    f.size, 
+                    f.created_at 
+                FROM files f
+                INNER JOIN buckets b ON f.bucket_id = b.id
+                WHERE b.bucket_hash = @Hash
+                ORDER BY f.created_at";
+            return _db.LoadData<FileModel, dynamic>(sql, new { Hash = bucketHash });
+        }
+
+        #endregion
+
+        #region Keys
+       
         public string SaveApiKey(int userId, string? description = null)
         {
             // Generate the API key
@@ -287,5 +301,7 @@ namespace StoreBytes.DataAccess.Data
 
             return _db.LoadData<ApiKeyModel, dynamic>(sql, new { UserId = userId });
         }
+
+        #endregion
     }
 }
