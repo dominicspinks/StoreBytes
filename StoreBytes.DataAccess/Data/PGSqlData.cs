@@ -68,7 +68,7 @@ namespace StoreBytes.DataAccess.Data
             const string sqlCheck = @"
                     SELECT COUNT(1) 
                     FROM buckets 
-                    WHERE user_id = @UserId AND name = @BucketName";
+                    WHERE user_id = @UserId AND bucket_name = @BucketName";
 
             int count = _db.LoadData<int, dynamic>(sqlCheck, new { UserId = userId, BucketName = bucketName }).FirstOrDefault();
 
@@ -233,6 +233,25 @@ namespace StoreBytes.DataAccess.Data
 
                 return rowsAffected > 0;
             });
+        }
+
+        public bool UpdateBucketDetails(string bucketHash, string bucketName, bool isActive)
+        { 
+            string sql = $@"
+                UPDATE buckets
+                SET 
+                    bucket_name = @BucketName, 
+                    is_active = @IsActive
+                WHERE bucket_hash = @BucketHash";
+
+            int rowsAffected = _db.SaveData(sql, new
+            {
+                BucketHash = bucketHash,
+                BucketName = bucketName,
+                IsActive = isActive
+            });
+
+            return rowsAffected > 0;
         }
     }
 }

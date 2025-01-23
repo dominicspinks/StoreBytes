@@ -18,5 +18,6 @@ namespace StoreBytes.DataAccess.Data
         UserTokenModel? GetUserTokenByApiKey(string apiKey);
         string SaveApiKey(int userId);
         bool SetBucketActiveState(string hash, bool isActive);
+        bool UpdateBucketDetails(string bucketHash, string bucketName, bool isActive);
     }
 }

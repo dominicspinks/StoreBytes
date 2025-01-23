@@ -33,6 +33,7 @@ builder.Services.AddHttpClient("StoreBytesAPI", client =>
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<BucketService>();
+builder.Services.AddScoped<FileService>();
 
 // Add JWT Bearer Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

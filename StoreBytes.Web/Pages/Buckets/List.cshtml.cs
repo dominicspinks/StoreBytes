@@ -32,25 +32,25 @@ namespace StoreBytes.Web.Pages.Buckets
             // Validate the bucket name
             if (string.IsNullOrWhiteSpace(BucketName))
             {
-                TempData["ErrorMessage"] = "Bucket name is required.";
+                ViewData["ErrorMessage"] = "Bucket name is required.";
                 return await OnGetAsync(); // Reload the list page with the error
             }
 
             if (!ValidationHelper.IsValidBucketName(BucketName))
             {
-                TempData["ErrorMessage"] = "Bucket name must start with a letter and can only contain letters, numbers, and underscores.";
+                ViewData["ErrorMessage"] = "Bucket name must start with a letter and can only contain letters, numbers, and underscores.";
                 return await OnGetAsync(); // Reload the list page with the error
             }
 
             try
             {
                 await _bucketService.AddBucketAsync(BucketName);
-                TempData["SuccessMessage"] = "Bucket created successfully!";
+                ViewData["SuccessMessage"] = "Bucket created successfully!";
                 return RedirectToPage(); // Refresh the page to show the updated list
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "An error occurred while creating the bucket.";
+                ViewData["ErrorMessage"] = "An error occurred while creating the bucket.";
                 // Log the exception for debugging
                 Console.WriteLine(ex);
                 return await OnGetAsync(); // Reload the list page with the error

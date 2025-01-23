@@ -62,7 +62,7 @@ namespace StoreBytes.DataAccess.Databases
                 commandType = CommandType.StoredProcedure;
             }
 
-            if (transaction != null)
+            if (transaction != null && transaction.Connection != null)
             {
                 // Use the transaction's connection
                 return transaction.Connection.Execute(sqlStatement, parameters, transaction: transaction, commandType: commandType);

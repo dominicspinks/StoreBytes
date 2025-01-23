@@ -102,7 +102,7 @@ These are the overall features to add to the application. They are to be split i
 	-	Identifier (hashed name)
 	-	Create date
 	-	Edit button
-		-	Allows the user to change the bucket name (this would not change the identifier, possibly the hash generation for the bucket name needs to change)
+		-	Allows the user to change the bucket name
 	-	Disable button (visible only if is_active = true)
 		-	Shows confirmation prompt/window
 		-	Sets is_active to false

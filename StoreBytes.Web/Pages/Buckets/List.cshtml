@@ -5,18 +5,20 @@
 }
 
 <!-- Display server-side error message -->
-@if (TempData["ErrorMessage"] != null)
+@if (ViewData["ErrorMessage"] != null || TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show">
+        @ViewData["ErrorMessage"]
         @TempData["ErrorMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
 <!-- Display success message -->
-@if (TempData["SuccessMessage"] != null)
+@if (ViewData["SuccessMessage"] != null || TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show">
+        @ViewData["SuccessMessage"]
         @TempData["SuccessMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -32,11 +34,11 @@
     <div class="d-flex flex-column justify-content-center gap-3">
         @foreach (var bucket in Model.Buckets)
         {
-            <a href="@Url.Page("/Buckets/Details", new { id = bucket.HashedName })" class="text-decoration-none text-dark w-100">
+            <a href="@Url.Page("/Buckets/Details", new { hash = bucket.BucketHash })" class="text-decoration-none text-dark w-100">
                 <div class="card shadow-sm" style="min-width: 300px;">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
-                            <strong class="d-block">@bucket.Name</strong>
+                            <strong class="d-block">@bucket.BucketName</strong>
                             <small class="text-muted">
                                 Files: @bucket.FileCount,
                                 @((bucket.TotalSize < 10_000_000)
@@ -65,8 +67,8 @@
             <div class="modal-body">
                 <form method="post" id="addBucketForm" asp-page-handler="AddBucket">
                     <div class="form-group">
-                        <label for="bucketName">Bucket Name</label><br />
-                        <small class="form-text text-muted">Bucket names must start with a letter and can only contain letters, numbers, and underscores (_).</small>
+                        <small class="form-text text-muted">Bucket names must start with a letter and can only contain letters, numbers, and underscores (_).</small><br />
+                        <label for="bucketName">Bucket Name</label>
                         <input type="text" class="form-control" id="bucketName" name="BucketName" value="@Model.BucketName" />
                         <span asp-validation-for="BucketName" id="bucketNameError" class="text-danger" data-valmsg-for="BucketName"></span>
                     </div>

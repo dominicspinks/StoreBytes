@@ -1,12 +1,12 @@
 ﻿namespace StoreBytes.Web.Models
 {
-    public class FullBucketModel
+    public class BucketModel
     {
         public int Id { get; set; }
+        public int UserId { get; set; }
         public string BucketName { get; set; }
         public string BucketHash { get; set; }
+        public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
-        public int FileCount { get; set; }
-        public long TotalSize { get; set; }
     }
 }

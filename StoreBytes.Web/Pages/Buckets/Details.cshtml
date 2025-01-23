@@ -1,4 +1,180 @@
-﻿@page
+﻿@page "{hash}"
 @model StoreBytes.Web.Pages.Buckets.DetailsModel
 @{
+    ViewData["Title"] = "Bucket Details";
 }
+
+
+<!-- Display server-side error message -->
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @ViewData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Display success message -->
+@if (ViewData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @ViewData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+<div class="container">
+    <!-- Bucket Info Section -->
+    <div class="card mb-4">
+        <div class="card-body d-flex justify-content-between">
+            <div>
+                <h3>@Model.Bucket.BucketName</h3>
+                <p class="m-0 p-0"><strong>Status: </strong>@(Model.Bucket.IsActive ? "Enabled" : "Disabled")</p>
+                <p class="m-0 p-0"><strong>Identifier:</strong> @Model.Bucket.BucketHash</p>
+                <p class="m-0 p-0"><strong>Created:</strong> @Model.Bucket.CreatedAt.ToString("dd MMM yyyy")</p>
+            </div>
+            <div class="d-flex flex-column gap-2">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editBucketModal">Edit</button>
+                @if (Model.Bucket.IsActive)
+                {
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#toggleBucketModal">Disable</button>
+                }
+                else
+                {
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#toggleBucketModal">Enable</button>
+                }
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteBucketModal">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Files Section -->
+    <h4>Files</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Identifier</th>
+                <th>URL</th>
+                <th>Size</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var file in Model.Files)
+            {
+                <tr>
+                    <td>@file.FileName</td>
+                    <td>@file.FileHash</td>
+                    <td><a href="@file.Url" target="_blank">Download</a></td>
+                    <td>@((file.Size / 1024).ToString("N2")) KB</td>
+                    <td>@file.CreatedAt.ToString("dd MMM yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Edit Bucket Modal -->
+<div class="modal fade" id="editBucketModal" tabindex="-1" aria-labelledby="editBucketLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBucketLabel">Edit Bucket Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="EditBucket">
+                    <div class="mb-3">
+                        <small class="form-text text-muted">Bucket names must start with a letter and can only contain letters, numbers, and underscores (_).</small><br />
+                        <label for="bucketName" class="form-label">New Name</label>
+                        <input type="text" id="bucketName" name="BucketName" class="form-control" value="@Model.Bucket.BucketName" />
+                        <span id="bucketNameError" class="text-danger" data-valmsg-for="BucketName"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activate/Deactivate Modal -->
+<div class="modal fade" id="toggleBucketModal" tabindex="-1" aria-labelledby="toggleBucketLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="toggleBucketLabel">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="toggleBucketMessage">Are you sure you want to change the status of this bucket?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="ToggleBucketStatus">
+                    <input type="hidden" id="isActive" name="IsActive" value="@(Model.Bucket.IsActive.ToString())" />
+                    <button type="submit" id="toggleBucketConfirmButton" class="btn btn-warning">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Bucket Modal -->
+<div class="modal fade" id="deleteBucketModal" tabindex="-1" aria-labelledby="deleteBucketLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteBucketLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this bucket? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="DeleteBucket">
+                    <button type="submit" id="deleteBucketConfirmButton" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Attach event listener to the form
+    document.getElementById('editBucketModal').addEventListener('submit', (event) => {
+        const bucketName = document.getElementById('bucketName').value.trim();
+        const bucketNameError = document.getElementById('bucketNameError');
+
+        // Clear previous error messages
+        if (bucketNameError) {
+            bucketNameError.textContent = '';
+        }
+
+        // Client-side validation
+        const isValid = /^[a-zA-Z][a-zA-Z0-9_]*$/.test(bucketName);
+        if (!isValid) {
+            if (bucketNameError) {
+                bucketNameError.textContent = 'Invalid bucket name';
+            }
+            console.log('Invalid bucket name.');
+            event.preventDefault();
+        }
+    });
+
+    // Clear the bucket name field and error message when the modal is closed
+    document.getElementById('editBucketModal').addEventListener('hidden.bs.modal', () => {
+        const bucketNameField = document.getElementById('bucketName');
+        const bucketNameError = document.getElementById('bucketNameError');
+
+        if (bucketNameField) {
+            bucketNameField.value = @Model.Bucket.BucketName;
+        }
+        if (bucketNameError) {
+            bucketNameError.textContent = '';
+        }
+    });
+</script>

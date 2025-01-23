@@ -110,10 +110,6 @@ public class FileController : ControllerBase
             }
 
             var files = _db.GetFilesByBucketHash(hash);
-            if (files == null || !files.Any())
-            {
-                return NotFound("No files found for the given bucket.");
-            }
 
             return Ok(files);
         }

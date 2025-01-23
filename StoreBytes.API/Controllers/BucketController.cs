@@ -195,5 +195,45 @@ namespace StoreBytes.API.Controllers
                 return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
             }
         }
+
+        [HttpPut("{hash}/update")]
+        public IActionResult UpdateBucket(string hash, [FromBody] UpdateBucketRequestModel request)
+        {
+            try
+            {
+                if (request == null || (request.BucketName == null && request.IsActive == null))
+                {
+                    return BadRequest(new { error = "At least one field (BucketName or IsActive) must be provided for the update." });
+                }
+
+                var bucket = _db.GetBucketByHash(hash);
+                if (bucket == null)
+                {
+                    return NotFound(new { error = "Bucket not found." });
+                }
+
+                var validationResponse = UserValidationHelper.ValidateOwnership(bucket, User);
+                if (validationResponse != null)
+                {
+                    return validationResponse;
+                }
+
+                bool success = _db.UpdateBucketDetails(
+                    bucketHash: hash,
+                    bucketName: request.BucketName ?? bucket.BucketName,
+                    isActive: request.IsActive ?? bucket.IsActive
+                );
+
+                if (!success)
+                {
+                    return BadRequest(new { error = "Failed to update the bucket." });
+                }
+                return Ok(new { message = $"Bucket {hash} successfully updated." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            }
+        }
     }
 }
