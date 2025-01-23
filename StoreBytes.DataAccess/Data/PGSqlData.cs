@@ -25,42 +25,16 @@ namespace StoreBytes.DataAccess.Data
             string hashedApiKey = SecurityHelper.HashBase64(apiKey, _hashSecret);
 
             const string sql = @"
-                    SELECT t.id, t.user_id, t.api_key, t.description, t.created_at, t.expires_at, t.is_active 
-                    FROM user_tokens t 
+                    SELECT t.id, t.user_id, t.key_hash, t.description, t.created_at, t.expires_at, t.is_active 
+                    FROM keys t 
                     INNER JOIN users u ON t.user_id = u.id 
-                    WHERE t.api_key = @ApiKey 
+                    WHERE t.key_hash = @KeyHash 
                         AND t.is_active = true 
                         AND (t.expires_at IS NULL OR t.expires_at > NOW()) 
                         AND u.is_active = true";
 
-            var results = _db.LoadData<UserTokenModel, dynamic>(sql, new { ApiKey = hashedApiKey });
+            var results = _db.LoadData<UserTokenModel, dynamic>(sql, new { KeyHash = hashedApiKey });
             return results.FirstOrDefault();
-        }
-
-        public string SaveApiKey(int userId)
-        {
-            // Generate the API key
-            string apiKey = SecurityHelper.GenerateApiKey();
-            string hashedApiKey = SecurityHelper.HashBase64(apiKey, _hashSecret);
-
-            // Save the hashed API key to the database
-            const string sql = @"
-                    INSERT INTO user_tokens (user_id, api_key, created_at, is_active)
-                    VALUES (@UserId, @ApiKey, NOW(), true)";
-
-            try
-            {
-                _db.SaveData(sql, new { UserId = userId, ApiKey = hashedApiKey });
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to create API key");
-            }
-
-            // Output the generated API key (provide this to the user)
-            Console.WriteLine("Generated API Key (provide this to the user): " + apiKey);
-            return apiKey;
         }
 
         public void CreateBucket(int userId, string bucketName)
@@ -252,6 +226,66 @@ namespace StoreBytes.DataAccess.Data
             });
 
             return rowsAffected > 0;
+        }
+
+        public string SaveApiKey(int userId, string? description = null)
+        {
+            // Generate the API key
+            string apiKey = SecurityHelper.GenerateApiKey();
+            string hashedApiKey = SecurityHelper.HashBase64(apiKey, _hashSecret);
+
+            // Save the hashed API key to the database
+            const string sql = @"
+                    INSERT INTO keys (
+                        user_id, 
+                        key_hash, 
+                        description, 
+                        created_at, 
+                        is_active
+                    )
+                    VALUES (
+                        @UserId,
+                        @KeyHash, 
+                        @Description, 
+                        NOW(), 
+                        true
+                    )";
+
+            try
+            {
+                _db.SaveData(sql, new { 
+                    UserId = userId, 
+                    KeyHash = hashedApiKey ,
+                    Description = description
+                });
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to create API key, {ex.Message}");
+            }
+
+            // Output the generated API key (provide this to the user)
+            Console.WriteLine("Generated API Key (provide this to the user): " + apiKey);
+            return apiKey;
+        }
+
+        public List<ApiKeyModel> GetApiKeysByUserId(int userId)
+        {
+            string sql = @"
+                SELECT
+                    id,
+                    user_id,
+                    key_hash,
+                    description,
+                    created_at,
+                    is_active,
+                    expires_at
+                FROM keys
+                WHERE user_id = @UserId
+                ORDER BY created_at DESC";
+
+            return _db.LoadData<ApiKeyModel, dynamic>(sql, new { UserId = userId });
         }
     }
 }

@@ -51,12 +51,12 @@ These are the overall features to add to the application. They are to be split i
 		-	Sign in - done
 		-	Sign out - done
 		-	List buckets - done
-		-	Delete bucket
-		-	List files in bucket
+		-	Delete bucket - done
+		-	List files in bucket - done
 			-	Display url
-		-	Delete file from bucket
 		-	Generate API Key
 -	V1.2
+	-	Delete file from bucket
 	-	Delete API key
 	-	Change password
 	-	Forgot password
@@ -125,17 +125,23 @@ These are the overall features to add to the application. They are to be split i
 
 #### Profile page
 
+-	User details
+	-	Email address
+	-	Sign up date
 -	Add API key button
 	-	Popup modal
-		-	Displays the new API key value
+		-	Description field (optional)
+	-	Popup modal after successfully creating the api key
+		-	Displays the new API key value (this will only appear once and the user will need to save it at this point)
 -	API Key list
 	-	Description
 	-	Create date
 	-	Expiry date
-	-	Active
+	-	Active status
 	
 -	API Endpoints required:
 	-	Get list of API keys by user Id
+	-	Move existing create-api-key endpoint to a new keys controller
 	
 #### API Page
 

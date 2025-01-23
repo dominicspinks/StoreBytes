@@ -58,34 +58,6 @@ namespace StoreBytes.API.Controllers
             }
         }
 
-        // POST: /auth/create-api-key
-        [HttpPost("create-api-key")]
-        [Authorize]
-        public IActionResult CreateApiKey()
-        {
-            try
-            {
-                var tokenType = User.FindFirst(CustomClaimTypes.TokenType)?.Value;
-                if (string.IsNullOrWhiteSpace(tokenType) || tokenType != TokenTypeValues.User)
-                {
-                    return Unauthorized(new { error = "Invalid token type. API keys cannot be used for this operation." });
-                }
-
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-                {
-                    return Unauthorized(new { error = "Invalid user ID." });
-                }
-
-                string newApiKey = _db.SaveApiKey(userId);
-                return Ok(new { apiKey = newApiKey });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { error = ex.Message});
-            }
-        }
-
         [HttpPost("register")]
         [AllowAnonymous]
         public IActionResult Register([FromBody] RegisterUserRequestModel request)

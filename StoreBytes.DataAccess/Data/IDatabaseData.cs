@@ -8,6 +8,7 @@ namespace StoreBytes.DataAccess.Data
         void AddUserWithPassword(string email, string passwordHash);
         void CreateBucket(int userId, string bucketName);
         bool DeleteBucket(string hash);
+        List<ApiKeyModel> GetApiKeysByUserId(int userId);
         BucketModel GetBucketByHash(string hash);
         BucketModel? GetBucketById(int bucketId, int userId);
         BucketModel? GetBucketByName(string bucketName, int userId);
@@ -16,7 +17,7 @@ namespace StoreBytes.DataAccess.Data
         List<FileModel> GetFilesByBucketHash(string bucketHash);
         UserModel GetUserByEmail(string email);
         UserTokenModel? GetUserTokenByApiKey(string apiKey);
-        string SaveApiKey(int userId);
+        string SaveApiKey(int userId, string? description = null);
         bool SetBucketActiveState(string hash, bool isActive);
         bool UpdateBucketDetails(string bucketHash, string bucketName, bool isActive);
     }
