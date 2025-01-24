@@ -21,13 +21,20 @@ namespace StoreBytes.DataAccess.Data
 
         #region Auth
 
-        public UserTokenModel? GetUserTokenByApiKey(string apiKey)
+        public UserKeyModel? GetKeyByApiKey(string apiKey)
         {
             // Hash the provided API key
             string hashedApiKey = SecurityHelper.HashBase64(apiKey, _hashSecret);
 
             const string sql = @"
-                    SELECT t.id, t.user_id, t.key_hash, t.description, t.created_at, t.expires_at, t.is_active 
+                    SELECT 
+                        t.id, 
+                        t.user_id, 
+                        t.key_hash, 
+                        t.description, 
+                        t.created_at, 
+                        t.expires_at, 
+                        t.is_active 
                     FROM keys t 
                     INNER JOIN users u ON t.user_id = u.id 
                     WHERE t.key_hash = @KeyHash 
@@ -35,7 +42,7 @@ namespace StoreBytes.DataAccess.Data
                         AND (t.expires_at IS NULL OR t.expires_at > NOW()) 
                         AND u.is_active = true";
 
-            var results = _db.LoadData<UserTokenModel, dynamic>(sql, new { KeyHash = hashedApiKey });
+            var results = _db.LoadData<UserKeyModel, dynamic>(sql, new { KeyHash = hashedApiKey });
             return results.FirstOrDefault();
         }
 
@@ -45,10 +52,16 @@ namespace StoreBytes.DataAccess.Data
             _db.SaveData(sql, new { Email = email, PasswordHash = passwordHash });
         }
 
-        public UserModel GetUserByEmail(string email)
+        public UserLoginModel GetUserByEmail(string email)
         {
-            string sql = "SELECT id, email,created_at, is_active, password_hash FROM users WHERE email = @Email AND is_active = true";
-            return _db.LoadData<UserModel, dynamic>(sql, new { Email = email }).FirstOrDefault();
+            string sql = @"
+                SELECT
+                    id, 
+                    email,
+                    password_hash 
+                FROM users 
+                WHERE email = @Email AND is_active = true";
+            return _db.LoadData<UserLoginModel, dynamic>(sql, new { Email = email }).FirstOrDefault();
         }
 
         #endregion
@@ -300,6 +313,25 @@ namespace StoreBytes.DataAccess.Data
                 ORDER BY created_at DESC";
 
             return _db.LoadData<ApiKeyModel, dynamic>(sql, new { UserId = userId });
+        }
+
+        #endregion
+
+
+        #region Users
+
+
+        public UserDetailsModel? GetUserById(int userId)
+        {
+            string sql = @"
+                SELECT 
+                    id, 
+                    email, 
+                    created_at, 
+                    is_active 
+                FROM users 
+                WHERE id = @UserId";
+            return _db.LoadData<UserDetailsModel, dynamic>(sql, new { UserId = userId }).FirstOrDefault();
         }
 
         #endregion

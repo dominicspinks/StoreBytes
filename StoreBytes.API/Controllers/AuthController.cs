@@ -41,7 +41,7 @@ namespace StoreBytes.API.Controllers
                     return BadRequest(new { error = "API key is required." });
                 }
                 // Validate API key
-                var userToken = _db.GetUserTokenByApiKey(request.ApiKey);
+                var userToken = _db.GetKeyByApiKey(request.ApiKey);
 
                 if (userToken == null)
                 {

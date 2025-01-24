@@ -54,7 +54,7 @@ These are the overall features to add to the application. They are to be split i
 		-	Delete bucket - done
 		-	List files in bucket - done
 			-	Display url
-		-	Generate API Key
+		-	Generate API Key - done
 -	V1.2
 	-	Delete file from bucket
 	-	Delete API key

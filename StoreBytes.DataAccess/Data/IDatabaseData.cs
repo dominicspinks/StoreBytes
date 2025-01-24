@@ -15,8 +15,9 @@ namespace StoreBytes.DataAccess.Data
         List<FullBucketModel> GetBucketsByUserId(int userId);
         FileMetadataModel? GetFileMetadata(string bucketHash, string fileHash);
         List<FileModel> GetFilesByBucketHash(string bucketHash);
-        UserModel GetUserByEmail(string email);
-        UserTokenModel? GetUserTokenByApiKey(string apiKey);
+        UserLoginModel GetUserByEmail(string email);
+        UserDetailsModel? GetUserById(int userId);
+        UserKeyModel? GetKeyByApiKey(string apiKey);
         string SaveApiKey(int userId, string? description = null);
         bool SetBucketActiveState(string hash, bool isActive);
         bool UpdateBucketDetails(string bucketHash, string bucketName, bool isActive);

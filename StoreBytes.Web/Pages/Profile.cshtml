@@ -1,0 +1,123 @@
+﻿@page
+@model StoreBytes.Web.Pages.ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<!-- Display server-side error message -->
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @ViewData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Display success message -->
+@if (ViewData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @ViewData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container mt-4">
+    <!-- User Details Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>User Details</h3>
+            <p><strong>Email:</strong> @Model.User.Email</p>
+            <p><strong>Sign-up Date:</strong> @Model.User.CreatedAt.ToString("dd MMM yyyy")</p>
+        </div>
+    </div>
+
+    <!-- API Keys Section -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>API Keys</h3>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addApiKeyModal">Add API Key</button>
+        </div>
+        <div class="card-body">
+            @if (Model.ApiKeys.Any())
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Created At</th>
+                            <th>Expires At</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var apiKey in Model.ApiKeys)
+                        {
+                            <tr>
+                                <td>@(apiKey.Description ?? "--") </td>
+                                <td>@apiKey.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td>@(apiKey.ExpiresAt?.ToString("dd MMM yyyy") ?? "N/A")</td>
+                                <td>@(apiKey.IsActive ? "Active" : "Inactive")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No API keys found.</p>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Add API Key Modal -->
+<div class="modal fade" id="addApiKeyModal" tabindex="-1" aria-labelledby="addApiKeyLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addApiKeyLabel">Add API Key</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="AddApiKey">
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" id="description" name="Description" class="form-control" placeholder="Optional description" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate API Key</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Key Success Modal -->
+<div class="modal fade" id="showApiKeyModal" tabindex="-1" aria-labelledby="showApiKeyLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="showApiKeyLabel">New API Key</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Below is your new API key. This will only be shown once. Please copy it and save it securely.</p>
+                <div class="alert alert-info">
+                    <strong>@ViewData["NewApiKey"]</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const apiKey = '@ViewData["NewApiKey"]';
+            console.log("API Key from ViewData:", apiKey);
+            if (apiKey) {
+                $('#showApiKeyModal').modal('show');
+            }
+        });
+    </script>
+}

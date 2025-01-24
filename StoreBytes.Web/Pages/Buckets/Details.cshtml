@@ -143,38 +143,42 @@
 </div>
 
 
-<script>
-    // Attach event listener to the form
-    document.getElementById('editBucketModal').addEventListener('submit', (event) => {
-        const bucketName = document.getElementById('bucketName').value.trim();
-        const bucketNameError = document.getElementById('bucketNameError');
+@section Scripts {
 
-        // Clear previous error messages
-        if (bucketNameError) {
-            bucketNameError.textContent = '';
-        }
+    <script>
+        // Attach event listener to the form
+        document.getElementById('editBucketModal').addEventListener('submit', (event) => {
+            const bucketName = document.getElementById('bucketName').value.trim();
+            const bucketNameError = document.getElementById('bucketNameError');
 
-        // Client-side validation
-        const isValid = /^[a-zA-Z][a-zA-Z0-9_]*$/.test(bucketName);
-        if (!isValid) {
+            // Clear previous error messages
             if (bucketNameError) {
-                bucketNameError.textContent = 'Invalid bucket name';
+                bucketNameError.textContent = '';
             }
-            console.log('Invalid bucket name.');
-            event.preventDefault();
-        }
-    });
 
-    // Clear the bucket name field and error message when the modal is closed
-    document.getElementById('editBucketModal').addEventListener('hidden.bs.modal', () => {
-        const bucketNameField = document.getElementById('bucketName');
-        const bucketNameError = document.getElementById('bucketNameError');
+            // Client-side validation
+            const isValid = /^[a-zA-Z][a-zA-Z0-9_]*$/.test(bucketName);
+            if (!isValid) {
+                if (bucketNameError) {
+                    bucketNameError.textContent = 'Invalid bucket name';
+                }
+                console.log('Invalid bucket name.');
+                event.preventDefault();
+            }
+        });
 
-        if (bucketNameField) {
-            bucketNameField.value = @Model.Bucket.BucketName;
-        }
-        if (bucketNameError) {
-            bucketNameError.textContent = '';
-        }
-    });
-</script>
+        // Clear the bucket name field and error message when the modal is closed
+        document.getElementById('editBucketModal').addEventListener('hidden.bs.modal', () => {
+            const bucketNameField = document.getElementById('bucketName');
+            const bucketNameError = document.getElementById('bucketNameError');
+
+            if (bucketNameField) {
+                bucketNameField.value = @Model.Bucket.BucketName;
+            }
+            if (bucketNameError) {
+                bucketNameError.textContent = '';
+            }
+        });
+    </script>
+
+}
