@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Text.Json;
 
 namespace StoreBytes.Web.Utilities
@@ -17,19 +18,23 @@ namespace StoreBytes.Web.Utilities
 
         public static async Task<T> HandleResponseAsync<T>(HttpResponseMessage response)
         {
+            var responseContent = await response.Content.ReadAsStringAsync();
+
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"HTTP Error {response.StatusCode}: {error}");
+                // Throw HttpRequestException with response details
+                throw new HttpRequestException(
+                    $"HTTP Error {response.StatusCode}: {responseContent}",
+                    null,
+                    response.StatusCode);
             }
 
-            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            if (response.StatusCode == HttpStatusCode.NoContent)
             {
                 return default;
             }
 
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
+            return JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });

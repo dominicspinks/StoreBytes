@@ -1,17 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using StoreBytes.API.Models;
 using StoreBytes.DataAccess.Data;
 using StoreBytes.Common.Utilities;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Identity.Data;
 using StoreBytes.API.Utilities;
-using StoreBytes.DataAccess.Models;
-using StoreBytes.API.Security;
 
 namespace StoreBytes.API.Controllers
 {

@@ -49,6 +49,11 @@ namespace StoreBytes.Web.Pages.Auth
                 ErrorMessage = "Sign up failed.";
                 return Page();
             }
+            catch (InvalidOperationException ex)
+            {
+                ErrorMessage = ex.Message;
+                return Page();
+            }
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;

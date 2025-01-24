@@ -1,5 +1,6 @@
 ﻿using StoreBytes.Web.Models;
 using StoreBytes.Web.Utilities;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 
@@ -36,9 +37,15 @@ namespace StoreBytes.Web.Services
 
                 await HttpRequestHelper.HandleResponseAsync<object>(response);
 
-                _logger.LogInformation("User {Email} successfully signed upin.", email);
+                _logger.LogInformation("User {Email} successfully signed up.", email);
                 
                 return true;
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Conflict)
+            {
+                // Log and handle 409 Conflict
+                _logger.LogWarning("Sign up failed. Email {Email} is already registered.", email);
+                throw new InvalidOperationException("Email is already registered.", ex);
             }
             catch (Exception ex)
             {

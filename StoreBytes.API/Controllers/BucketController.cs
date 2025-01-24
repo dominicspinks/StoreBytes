@@ -4,14 +4,12 @@ using StoreBytes.API.Models;
 using StoreBytes.API.Utilities;
 using StoreBytes.DataAccess.Data;
 using StoreBytes.Common.Utilities;
-using System.Security.Claims;
-using StoreBytes.DataAccess.Models;
 
 namespace StoreBytes.API.Controllers
 {
     [Route("api/buckets")]
     [ApiController]
-    [Authorize] // Ensures that the endpoint requires a valid token
+    [Authorize]
     public class BucketController : ControllerBase
     {
         private readonly IDatabaseData _db;

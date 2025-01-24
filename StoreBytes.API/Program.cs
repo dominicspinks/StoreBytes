@@ -12,10 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 Env.Load();
 
-var defaultEnvironmentVariables = new Dictionary<string, string>
+var defaultEnvironmentVariables = new Dictionary<string, string?>
 {
     { ConfigurationKeys.Shared.HashSecret, "this_is_the_hash_secret" },
-    { ConfigurationKeys.Shared.JwtSecret, "this_is_the_jwt_secret" }
+    { ConfigurationKeys.Shared.JwtSecret, "this_is_the_jwt_secret" },
+    { ConfigurationKeys.Api.FilesBasePath, "/file-storage" }
 };
 
 var requiredEnvironmentVariables = new List<string>
