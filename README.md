@@ -1,44 +1,26 @@
 ﻿# StoreBytes
 
-StoreBytes API is a file storage service designed to provide bucket-based file management similar to AWS S3. The API allows users to create buckets, upload files, and access files via unique URLs. It also supports authentication via JWT tokens and API keys.
+StoreBytes is an object storage service that provides bucket-based file management. Ideal for personal projects, it offers a user-friendly web interface and API integration for easy file storage and retrieval. The platform is designed to be self-hosted, making it a cost-effective alternative to cloud providers by avoiding unexpected fees while maintaining control over your data.
 
 ---
 
 ## Features
 
-### Authentication
-- **JWT Tokens**: Authenticate requests using short-lived tokens.
-- **API Keys**: Generate API keys for authentication.
+### Web Interface
+The web interface allows users to manage their storage buckets and files easily. It provides an intuitive interface to:
+- Create and view buckets.
+- Retrieve and download files.
+- Manage API keys
 
-### Buckets
-- Create buckets to organise files.
-- Each bucket has a hashed name for obfuscation.
+Sign up and try it out for yourself: [https://storebytes.domsapps.com](https://storebytes.domsapps.com)
 
-### File Management
-- Upload files to specific buckets.
-- Access files via unique, obfuscated URLs.
+### API Integration
+The API supports:
+- **Authentication**: Generate and use JWT tokens to authenticate requests.
+- **File Upload**: Upload files directly to specific buckets.
+- **File Access**: Retrieve files using unique, obfuscated URLs.
 
----
-
-## Project Structure
-
-```
-StoreBytesAPI
-├── Controllers
-│   ├── AuthController.cs
-│   └── FilesController.cs
-├── Program.cs
-
-StoreBytesLibrary
-├── Data
-│   ├── PGSqlData.cs
-├── Databases
-│   ├── PGSqlDataAccess.cs
-├── Models
-│   └── FileMetadata.cs
-├── Services
-│   └── FileStorageService.cs
-```
+Access the API: [https://storebytesapi.domsapps.com](https://storebytesapi.domsapps.com)
 
 ---
 
@@ -60,6 +42,8 @@ cd StoreBytesAPI
 ```
 
 ### 2. Configure Environment Variables
+
+#### API
 Create a `.env` file in the root directory with the following variables:
 ```env
 DATABASE_URL=Host=<host>;Port=<port>;Database=<db>;Username=<user>;Password=<password>
@@ -67,74 +51,99 @@ HASH_SECRET=<hashing-secret>
 JWT_SECRET=<jwt-secret>
 ```
 
+#### Web
+Create a `.env` file in the root directory with the following variables:
+```env
+STOREBYTESAPI_URL=<url for your storebytes api>
+JWT_SECRET=<jwt-secret>
+```
+
+
+
 ### 3. Set Up the Database
-Run the SQL scripts located in `StoreBytesLibrary/Scripts/SqlMigrations/V1_CreateDB.sql` and `StoreBytesLibrary/Scripts/V1_CreateUser.sql` to create the required tables.
+Run the SQL scripts located in `StoreBytesLibrary/Scripts/SqlMigrations/` to create the required tables.
+- `V1_CreateDB.sql`
+- `V1_CreateUser.sql`
+- `V1.1.sql`
 
 ### 4. Run the Application
 
-#### Development Mode
-```bash
-dotnet run
+#### Docker Deployment
+1. Build and run the Docker images:
+    ```bash
+    docker build -f ./StoreBytes.API/Dockerfile -t storebytes-api ./StoreBytes.API
+    docker run -d -p 8000:8080 -p 8001:8081 --env-file .env --name storebytes-api storebytes-api
+    
+    docker build -f ./StoreBytes.Web/Dockerfile -t storebytes-web ./StoreBytes.Web
+    docker run -d -p 8010:8080 -p 8011:8081 --env-file .env --name storebytes-web storebytes-web
+    ```
+
+2. Verify the containers are running:
+    ```bash
+    docker ps
+    ```
+
+Alternatively, you can download the current images from Docker Hub:
+- `dominicspinks/storebytesapi:1.1.0`
+- `dominicspinks/storebytesweb:1.1.0`
+
+---
+
+## API Instructions
+
+### Authentication: Generate a JWT Token
+**POST /auth/token**
+
+Use this endpoint to generate a short-lived JWT token using an API key.
+
+#### Request:
+```json
+{
+  "apiKey": "your-api-key"
+}
 ```
 
-#### Docker Deployment
-1. Build and run the Docker image:
-	```bash
-	docker build -t storebytes-api .
-	docker run -d -p 8080:8080 --env-file .env --name storebytes-api storebytes-api
-	```
+#### Response:
+```json
+{
+  "token": "generated-jwt-token"
+}
+```
 
-2. Verify the container is running:
-	```bash 
-	docker ps
-	```
+### File Upload: Upload a File
+**POST /files/upload**
 
----
+Use this endpoint to upload a file to a specific bucket.
 
-## API Endpoints
+#### Request:
+- Headers:
+    - `Authorization: Bearer <jwt-token>`
+- Body (Form-Data):
+    - `bucketName`: Name of the bucket.
+    - `file`: The file to upload.
 
-### Authentication
-- **POST /auth/token**: Generate a short-lived JWT token using an API key.
-- **POST /auth/create-api-key**: Generate a new API key for the authorised user.
+#### Response:
+```json
+{
+  "url": "shortened-url-for-file"
+}
+```
 
-### Buckets
-- **POST /buckets**: Create a new bucket.
-- **GET /buckets**: Retrieve all buckets for the authorised user.
+### File Retrieval: Access a File
+**GET /files/{bucketHash}/{fileHash}**
 
-### Files
-- **POST /files/upload**: Upload a file to a bucket.
-- **GET /files/{bucketHash}/{fileHash}**: Retrieve a file via its unique URL.
+Use this endpoint to retrieve a file using its unique URL.
 
----
+#### Request:
+```http
+GET /files/{bucketHash}/{fileHash}
+```
 
-## Testing
-
-### Using Postman
-1. Import the collection: Add API endpoints to Postman for testing.
-2. Set up environment variables for Postman:
-	- apiKey
-	- `baseUrl`: Base URL of the API (e.g., `http://localhost:8080`).
-	- `authToken`: JWT token obtained from `/auth/token`.
-
-3. Test endpoints:
-	- Generate an API key.
-	- Use the API key to generate a JWT token.
-	- Create a bucket and upload files.
-	- Retrieve files using their URLs.
-
----
-
-## Known Issues
-
-
----
-
-## Future Enhancements
-- Add support for file encryption at rest.
-- Implement rate limiting for API requests.
-- Add bucket and file lifecycle policies.
+#### Response:
+The file will be returned as binary data.
 
 ---
 
 ## License
 This project is licensed under the MIT License.
+

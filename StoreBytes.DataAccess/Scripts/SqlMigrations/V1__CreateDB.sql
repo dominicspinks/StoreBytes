@@ -1,4 +1,6 @@
-﻿--CREATE DATABASE storebytesdb;
+﻿CREATE DATABASE storebytesdb;
+
+\c storebytesdb
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
