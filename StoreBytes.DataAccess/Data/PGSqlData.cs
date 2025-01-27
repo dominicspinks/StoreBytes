@@ -3,6 +3,7 @@ using StoreBytes.DataAccess.Databases;
 using StoreBytes.DataAccess.Models;
 using StoreBytes.Common.Utilities;
 using StoreBytes.Common.Configuration;
+using System.Data;
 
 namespace StoreBytes.DataAccess.Data
 {
@@ -17,6 +18,11 @@ namespace StoreBytes.DataAccess.Data
             _db = db;
             _config = config;
             _hashSecret = _config[ConfigurationKeys.Shared.HashSecret] ?? "";
+        }
+
+        public T ExecuteTransaction<T>(Func<IDbTransaction, T> transactionalOperation)
+        {
+            return _db.ExecuteTransaction(transactionalOperation);
         }
 
         #region Auth
@@ -249,6 +255,30 @@ namespace StoreBytes.DataAccess.Data
                 WHERE b.bucket_hash = @Hash
                 ORDER BY f.created_at";
             return _db.LoadData<FileModel, dynamic>(sql, new { Hash = bucketHash });
+        }
+
+        public FileModel GetFileByHashes(string bucketHash, string fileHash)
+        {
+            string sql = @"
+                SELECT 
+                    f.id, 
+                    b.user_id,
+                    f.bucket_id, 
+                    f.file_name, 
+                    f.file_hash,
+                    f.file_path, 
+                    f.size, 
+                    f.created_at 
+                FROM files f
+                INNER JOIN buckets b ON f.bucket_id = b.id
+                WHERE b.bucket_hash = @BucketHash AND f.file_hash = @FileHash";
+            return _db.LoadData<FileModel, dynamic>(sql, new { BucketHash = bucketHash, FileHash = fileHash }).FirstOrDefault();
+        }
+
+        public bool DeleteFileById(int id)
+        {
+            string sql = "DELETE FROM files WHERE id = @Id";
+            return _db.SaveData(sql, new { Id = id }) > 0;
         }
 
         #endregion

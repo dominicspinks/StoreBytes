@@ -118,4 +118,41 @@ public class FileController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
+    [HttpDelete("{bucketHash}/{fileHash}")]
+    public IActionResult DeleteFile(string bucketHash, string fileHash)
+    {
+        try
+        {
+            var file = _db.GetFileByHashes(bucketHash, fileHash);
+            if (file == null)
+            {
+                return NotFound(new { error = "File not found." });
+            }
+
+            // Validate ownership
+            var validationResponse = UserValidationHelper.ValidateOwnership(file, User);
+            if (validationResponse != null)
+            {
+                return validationResponse;
+            }
+
+            var result = _db.ExecuteTransaction(transaction =>
+            {
+                // Delete the file from db
+                _db.DeleteFileById(file.Id);
+
+                // Delete the file from the file system
+                _files.DeleteFile(bucketHash, fileHash);
+
+                return true;
+            });
+
+            return Ok(new { message = "File successfully deleted." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
 }

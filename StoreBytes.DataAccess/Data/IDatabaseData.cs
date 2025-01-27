@@ -1,4 +1,5 @@
 ﻿using StoreBytes.DataAccess.Models;
+using System.Data;
 
 namespace StoreBytes.DataAccess.Data
 {
@@ -21,5 +22,8 @@ namespace StoreBytes.DataAccess.Data
         string SaveApiKey(int userId, string? description = null);
         bool SetBucketActiveState(string hash, bool isActive);
         bool UpdateBucketDetails(string bucketHash, string bucketName, bool isActive);
+        FileModel GetFileByHashes(string bucketHash, string fileHash);
+        bool DeleteFileById(int id);
+        T ExecuteTransaction<T>(Func<IDbTransaction, T> transactionalOperation);
     }
 }

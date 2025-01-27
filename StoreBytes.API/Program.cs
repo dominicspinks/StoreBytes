@@ -39,6 +39,7 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
@@ -48,7 +49,12 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<IPGSqlDataAccess, PGSqlDataAccess>();
 builder.Services.AddSingleton<IDatabaseData, PGSqlData>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddSingleton(new FileStorageService(builder.Configuration[ConfigurationKeys.Api.FilesBasePath]));
+builder.Services.AddSingleton<FileStorageService>(provider =>
+{
+    var logger = provider.GetRequiredService<ILogger<FileStorageService>>();
+    var filesBasePath = builder.Configuration[ConfigurationKeys.Api.FilesBasePath];
+    return new FileStorageService(filesBasePath, logger);
+}); 
 builder.Services.AddScoped<JwtHelper>();
 
 
