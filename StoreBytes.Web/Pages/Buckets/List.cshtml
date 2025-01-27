@@ -40,7 +40,7 @@
                         <div>
                             <strong class="d-block">@bucket.BucketName</strong>
                             <small class="text-muted">
-                                Files: @bucket.FileCount,
+                                Files: @(bucket.FileCount) | 
                                 @((bucket.TotalSize < 10_000_000)
                                     ? (bucket.TotalSize / 1_000_000.0).ToString("F1") + " MB"
                                     : (bucket.TotalSize / 1_000_000).ToString("N0") + " MB")

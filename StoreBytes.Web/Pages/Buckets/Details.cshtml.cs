@@ -121,5 +121,20 @@ namespace StoreBytes.Web.Pages.Buckets
                 return await OnGetAsync(hash);
             }
         }
+
+        public async Task<IActionResult> OnPostDeleteFileAsync(string bucketHash, string fileHash)
+        {
+            try
+            {
+                await _fileService.DeleteFileAsync(bucketHash, fileHash);
+                ViewData["SuccessMessage"] = "File deleted successfully.";
+                return await OnGetAsync(bucketHash);
+            }
+            catch (Exception ex) {
+                ViewData["ErrorMessage"] = "An error occurred while deleting the file. Please try again.";
+                _logger.LogError(ex, "Failed to delete file: {FileHash}.", fileHash);
+                return await OnGetAsync(bucketHash);
+            }
+        }
     }
 }
