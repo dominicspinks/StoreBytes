@@ -39,8 +39,7 @@ namespace StoreBytes.Web.Pages.Auth
 
                 if (success)
                 {
-                    // Redirect to the index page upon successful login
-                    return RedirectToPage("/Index");
+                    return RedirectToPage("/Buckets/List");
                 }
 
                 ErrorMessage = "Login failed.";
