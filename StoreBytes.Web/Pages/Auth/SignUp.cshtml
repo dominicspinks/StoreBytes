@@ -4,23 +4,27 @@
     ViewData["Title"] = "Sign Up";
 }
 
-<h2>Sign Up</h2>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
     <div class="alert alert-danger">@Model.ErrorMessage</div>
 }
 
-<form method="post">
-    <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="Email" class="form-control" value="@Model.Email" required />
-    </div>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="text-center">Sign Up</h2>
+        <form method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="Email" class="form-control" value="@Model.Email" required />
+            </div>
 
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="Password" class="form-control" required minlength="8" />
-    </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="Password" class="form-control" required minlength="8" />
+            </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Sign Up</button>
-</form>
+            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+        </form>
+    </div>
+</div>
