@@ -7,7 +7,8 @@
             "/Auth/Login",
             "/Auth/SignUp",
             "/Privacy",
-            "/Terms"
+            "/Terms",
+            "/"
         };
     }
 }

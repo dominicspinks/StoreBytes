@@ -1,4 +1,72 @@
 ﻿@page
 @model IndexModel
 @{
+    ViewData["Title"] = "Welcome to StoreBytes";
 }
+
+<div class="container mt-5">
+    <h1>Welcome to StoreBytes</h1>
+    <p class="lead">Your secure and efficient solution for managing and sharing files.</p>
+
+    <!-- Site Description Section -->
+    <section class="my-5">
+        <h2>About StoreBytes</h2>
+        <p>
+            StoreBytes is a platform designed to help you manage, store, and share files effortlessly.
+            With a simple interface and powerful API, StoreBytes provides tools to organise your files
+            into buckets, ensuring your data is secure and easily accessible when needed.
+        </p>
+        <p>
+            If you are a developer seeking a simple file storage solution for your applications, StoreBytes has you covered.
+            <a href="/Auth/SignUp" class="text-primary">Sign Up</a> now or
+            <a href="https://github.com/dominicspinks/StoreBytes" target="_blank" class="text-primary">deploy your own instance</a> to get started.
+        </p>
+    </section>
+
+    <!-- API Instructions Section -->
+    <section class="my-5">
+        <h2>Getting Started with the API</h2>
+        <p>
+            StoreBytes offers a RESTful API for programmatically interacting with your files and buckets.
+            Follow the steps below to integrate the API into your application:
+        </p>
+
+        <h3>1. Authentication</h3>
+        <p>
+            Use the <code>/api/auth/token</code> endpoint to generate an access token. Include the
+            API key in the request body as JSON:
+        </p>
+        <pre><code class="language-json">
+POST /api/auth/token
+{
+    "apiKey": "your_api_key_here"
+}
+        </code></pre>
+        <p>The response will include an access token valid for 15 minutes. Use this token in the `Authorization` header for all subsequent requests.</p>
+
+        <h3>2. Uploading Files</h3>
+        <p>
+            Use the <code>/api/files/upload</code> endpoint to upload a file to a bucket:
+        </p>
+        <pre><code class="language-json">
+POST /api/files/upload
+Authorization: Bearer your_access_token
+Content-Type: multipart/form-data
+
+{
+    "file": "path/to/your/file",
+    "bucketName": "my_bucket_name"
+}
+        </code></pre>
+
+        <h3>3. Retrieving Files</h3>
+        <p>
+            Use the <code>/api/files/{bucketHash}/{fileHash}</code> endpoint to retrieve a file:
+        </p>
+        <pre><code class="language-json">
+GET /api/files/{bucketHash}/{fileHash}
+        </code></pre>
+
+        <p>For more details, refer to the <a href="/api/docs" target="_blank">API documentation</a>.</p>
+    </section>
+</div>
