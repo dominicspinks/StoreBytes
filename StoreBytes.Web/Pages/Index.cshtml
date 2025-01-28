@@ -48,15 +48,14 @@ POST /api/auth/token
         <p>
             Use the <code>/api/files/upload</code> endpoint to upload a file to a bucket:
         </p>
-        <pre><code class="language-json">
+        <pre><code class="language-http">
 POST /api/files/upload
 Authorization: Bearer your_access_token
 Content-Type: multipart/form-data
 
-{
-    "file": "path/to/your/file",
-    "bucketName": "my_bucket_name"
-}
+Form Fields:
+- file: The file to upload (binary).
+- bucketName: The name of the bucket to upload the file to.
         </code></pre>
 
         <h3>3. Retrieving Files</h3>
