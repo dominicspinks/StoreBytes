@@ -61,7 +61,7 @@ JWT_SECRET=<jwt-secret>
 
 
 ### 3. Set Up the Database
-Run the SQL scripts located in `StoreBytesLibrary/Scripts/SqlMigrations/` to create the required tables.
+Run the SQL scripts located in `StoreBytes.DataAccess/Scripts/SqlMigrations/` to create the required tables.
 - `V1_CreateDB.sql`
 - `V1_CreateUser.sql`
 - `V1.1.sql`
@@ -84,8 +84,8 @@ Run the SQL scripts located in `StoreBytesLibrary/Scripts/SqlMigrations/` to cre
     ```
 
 Alternatively, you can download the current images from Docker Hub:
-- `dominicspinks/storebytesapi:1.1.0`
-- `dominicspinks/storebytesweb:1.1.0`
+- `dominicspinks/storebytesapi:latest`
+- `dominicspinks/storebytesweb:latest`
 
 ---
 
