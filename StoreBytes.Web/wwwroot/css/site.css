@@ -29,3 +29,7 @@ body {
     white-space: nowrap;
     line-height: 40px;
 }
+
+body.modal-open {
+    padding-right: 0 !important;
+}
